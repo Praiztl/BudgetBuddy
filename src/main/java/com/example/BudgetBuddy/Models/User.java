@@ -25,7 +25,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -63,6 +62,9 @@ public class User implements UserDetails {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "users")
+    private Department department;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
