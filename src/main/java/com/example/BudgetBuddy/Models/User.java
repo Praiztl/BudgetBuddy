@@ -63,7 +63,7 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "users")
+    @OneToOne(mappedBy = "hod")
     private Department department;
 
     @Override

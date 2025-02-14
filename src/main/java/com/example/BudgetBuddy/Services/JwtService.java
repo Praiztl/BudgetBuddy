@@ -21,7 +21,7 @@ import static org.yaml.snakeyaml.tokens.Token.ID.Key;
 @RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
     @Value("${jwt.expiration}")

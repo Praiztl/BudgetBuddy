@@ -20,6 +20,7 @@ public class Department {
 
     private String name;
 
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     private List<Budget> budgets;
 
     @OneToOne(cascade = CascadeType.ALL)

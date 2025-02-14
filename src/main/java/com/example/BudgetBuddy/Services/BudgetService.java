@@ -4,9 +4,11 @@ import com.example.BudgetBuddy.Exceptions.BudgetNotFoundException;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Repositories.BudgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class BudgetService {
     @Autowired
     private BudgetRepository budgetRepo;

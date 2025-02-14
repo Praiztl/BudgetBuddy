@@ -1,5 +1,15 @@
 package com.example.BudgetBuddy.Models;
 
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
+@Entity
 public class RecurringExpense extends OneTimeExpense{
     private String interval = "weekly";
 
@@ -9,9 +19,6 @@ public class RecurringExpense extends OneTimeExpense{
 
     public void setInterval(String interval) {
         this.interval = interval;
-    }
-
-    public RecurringExpense() {
     }
 
     public RecurringExpense(String interval) {

@@ -1,9 +1,6 @@
 package com.example.BudgetBuddy.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,8 +17,14 @@ public class Budget {
 
     private Double amount;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
     private List<OneTimeExpense> expenses;
 
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
     private List<RecurringExpense> recurringExpenses;
 
     private String status = "Pending";
