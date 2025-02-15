@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.DTO.UpdateBudgetDTO;
 import com.example.BudgetBuddy.Exceptions.BudgetNotFoundException;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Repositories.BudgetRepository;
@@ -25,12 +26,12 @@ public class BudgetService {
         return budgetRepo.findById(id).orElseThrow(()->new BudgetNotFoundException("Budget with this ID does not exist."));
     }
 
-    public Budget updateBudget(String id, Budget updateBody){
+    public Budget updateBudget(String id, UpdateBudgetDTO updateBody){
         Budget budget = budgetRepo.findById(id).orElseThrow(()->new BudgetNotFoundException("Budget with this ID does not exist."));
 
-        if(!budget.equals(updateBody)){
-            budget = updateBody;
-        }
+        budget.setName(updateBody.getName());
+        budget.setAmount(updateBody.getAmount());
+
         return budgetRepo.save(budget);
     }
 
