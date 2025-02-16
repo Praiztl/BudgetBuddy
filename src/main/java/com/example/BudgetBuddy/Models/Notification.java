@@ -1,8 +1,15 @@
 package com.example.BudgetBuddy.Models;
 
+import jakarta.persistence.Entity;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Entity
+@Data
+@Setter
+@Getter
 public class Notification {
     private Integer id;
 
@@ -11,6 +18,8 @@ public class Notification {
     private String message;
 
     private Timestamp timestamp;
+
+    private User owner;
 
     public Notification() {
     }

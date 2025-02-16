@@ -2,6 +2,7 @@ package com.example.BudgetBuddy.Models;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.aspectj.weaver.ast.Not;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -65,6 +66,17 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "hod")
     private Department department;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Notification> notifications;
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

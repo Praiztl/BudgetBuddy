@@ -5,7 +5,8 @@ import lombok.*;
 @Getter
 @Setter
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class DepartmentDTO {
     private String name;
