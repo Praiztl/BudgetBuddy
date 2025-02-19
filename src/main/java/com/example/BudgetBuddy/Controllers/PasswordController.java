@@ -1,6 +1,6 @@
 package com.example.BudgetBuddy.Controllers;
 
-import com.example.BudgetBuddy.DTO.CreateOtpDTO;
+import com.example.BudgetBuddy.DTO.OTPCodeDTO;
 import com.example.BudgetBuddy.DTO.ResetPasswordDTO;
 import com.example.BudgetBuddy.DTO.VerifyOtpDTO;
 import com.example.BudgetBuddy.Services.PasswordService;
@@ -16,25 +16,29 @@ public class PasswordController {
 
     private final PasswordService passwordService;
 
+    /**
+     * Generate and send OTP to the user's email.
+     */
     @PostMapping("/generate-otp")
-    public ResponseEntity<?> generateOtp(@RequestBody CreateOtpDTO createOtpDTO) {
-        return passwordService.createOtpForUser(createOtpDTO.getEmail());
-
+    public ResponseEntity<?> generateOtp(@RequestBody OTPCodeDTO otpCodeDTO) {
+        return passwordService.createOtpForUser(otpCodeDTO.getEmail());
     }
 
-
+    /**
+     * Verify OTP for a user.
+     */
     @PostMapping("/verify-otp")
     public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpDTO verifyOtpDTO) {
-        boolean isValid = passwordService.verifyOtp(verifyOtpDTO.getEmail(), verifyOtpDTO.getOtp());
-        if (isValid) {
-            return ResponseEntity.ok("OTP is valid.");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired OTP.");
-        }
+        passwordService.verifyOtp(verifyOtpDTO.getEmail(), verifyOtpDTO.getOtp());
+        return ResponseEntity.ok("OTP is valid.");
     }
+
+    /**
+     * Reset user password after OTP verification.
+     */
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDTO) {
-        passwordService.resetPassword(resetPasswordDTO.getEmail(), resetPasswordDTO.getOtp(), resetPasswordDTO.getNewPassword()); // Throws exception if invalid or expired
+        passwordService.resetPassword(resetPasswordDTO.getEmail(), resetPasswordDTO.getOtp(), resetPasswordDTO.getNewPassword());
         return ResponseEntity.ok("Password has been reset successfully.");
     }
 }

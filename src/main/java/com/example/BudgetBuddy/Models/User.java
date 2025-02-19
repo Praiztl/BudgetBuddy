@@ -3,7 +3,6 @@ package com.example.BudgetBuddy.Models;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.*;
 
@@ -26,43 +25,26 @@ public class User implements UserDetails {
     private String id;
 
 
-    @Column(nullable = false, unique = true)
+    private String firstName;
+    private String lastName;
+
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String password;
 
+    private Boolean isVerified = false;
+    private Boolean isActive = false;
+
+    @Setter
+    @Getter
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role; // Using enum for role(Improvement by David)
-
-    @Column(unique = true)
-    private String phoneNumber;
-
-    @Column()
-    private String profileImageUrl;
-
-    @Column()
-    private String preferredCurrency;
+    private Role role;
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column
-    private String otp;
-
-    @Column
-    private LocalDateTime otpCreationTime;
-
-    @Column
-    private LocalDateTime otpExpirationTime;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -74,10 +56,18 @@ public class User implements UserDetails {
         return email;
     }
 
+    public void setDepartment(Department department) {
+    }
+
+    public void setApproved(boolean b) {
+
+    }
+
     // Enum for role definition
     public enum Role {
         ADMIN,
-        CUSTOMER;
+        HOD;
 
     }
+
 }

@@ -1,9 +1,8 @@
 package com.example.BudgetBuddy.Controllers;
 
-import com.example.BudgetBuddy.DTO.CreateUserDTO;
-import com.example.BudgetBuddy.DTO.LoginRequest;
-import com.example.BudgetBuddy.DTO.UserResponseDTO;
+import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Services.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +14,25 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<UserResponseDTO> registerUser(@RequestBody CreateUserDTO createUserDTO) {
-        return authenticationService.createUser(createUserDTO);
+    /**
+     * Registers a new Admin.
+     */
+    @PostMapping("/signup/admin")
+    public ResponseEntity<AdminResponseDTO> registerAdmin(@Valid @RequestBody AdminRegistrationDTO adminRegistrationDTO) {
+        return authenticationService.registerAdmin(adminRegistrationDTO);
     }
 
+    /**
+     * Registers a new HOD.
+     */
+    @PostMapping("/signup/hod")
+    public ResponseEntity<HODResponseDTO> registerHOD(@Valid @RequestBody HODRegistrationDTO hodRegistrationDTO) {
+        return authenticationService.registerHOD(hodRegistrationDTO);
+    }
+
+    /**
+     * Handles user login for both Admins & HODs.
+     */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         return authenticationService.login(loginRequest);
