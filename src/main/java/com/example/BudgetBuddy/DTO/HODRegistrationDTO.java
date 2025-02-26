@@ -33,13 +33,11 @@ public class HODRegistrationDTO {
     private String password;
 
     @NotBlank(message = "Please confirm your password")
-    private String confirmPassword; // For password confirmation
+    private String confirmPassword;
 
     @NotNull(message = "Department ID is required")
     private Long departmentId; // Department selected by HOD during registration
 
-    @NotBlank(message = "OTP is required")
-    private String otp;
 
     public Department getDepartment() {
         return new Department(departmentId, "Department Name");

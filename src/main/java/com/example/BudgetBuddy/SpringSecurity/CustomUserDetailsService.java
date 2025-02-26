@@ -28,7 +28,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         // If Admin not found, try to load from HOD repository
         HOD hod = hodRepository.findByEmail(email).orElse(null);
         if (hod != null) {
-            return hod;  // HOD implements UserDetails
+            if (!hod.isEnabled()) {
+                throw new UsernameNotFoundException("HOD account is disabled");
+            }
+            return hod;
         }
 
         // If neither Admin nor HOD is found, throw exception

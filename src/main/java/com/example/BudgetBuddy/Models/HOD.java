@@ -37,13 +37,14 @@ public class HOD implements UserDetails {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @Column(unique = true)
-    private String otpCode;
 
     private Boolean isOtpVerified = false;
+    private Boolean isVerified = false;
+    private Boolean isActive = false;
+    private Boolean isEnabled = false;
 
     @Enumerated(EnumType.STRING)
-    private HOD.Role role; // Add role field to differentiate between user roles
+    private HOD.Role role; // role field to differentiate between user roles
 
     public enum Role {
         HOD, // HOD role
