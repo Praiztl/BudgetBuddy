@@ -1,6 +1,8 @@
 package com.example.BudgetBuddy.Models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,7 +29,8 @@ public class Budget {
     @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
     private List<RecurringExpense> recurringExpenses;
 
-    private String status = "Pending";
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.Pending;
 
     public String getId() {
         return id;
@@ -69,11 +72,11 @@ public class Budget {
         this.expenses = expenses;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
@@ -98,5 +101,11 @@ public class Budget {
                 ", expenses=" + expenses +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    public enum Status{
+        Pending,
+        Approved,
+        Rejected
     }
 }

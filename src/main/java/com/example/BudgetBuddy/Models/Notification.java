@@ -1,9 +1,13 @@
 package com.example.BudgetBuddy.Models;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -11,13 +15,17 @@ import java.time.LocalTime;
 @Setter
 @Getter
 public class Notification {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     private String title;
 
     private String message;
 
-    private Timestamp timestamp;
+    private LocalDate date;
+
+    private LocalTime time;
 
     private User owner;
 
@@ -28,7 +36,8 @@ public class Notification {
         this.id = id;
         this.title = title;
         this.message = message;
-        this.timestamp = new Timestamp();
+        this.time = LocalTime.now();
+        this.date = LocalDate.now();
     }
 
     public Integer getId() {
@@ -55,21 +64,6 @@ public class Notification {
         this.message = message;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
 
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", message='" + message + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
-    }
-}
