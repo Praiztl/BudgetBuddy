@@ -2,8 +2,12 @@ package com.example.BudgetBuddy.Services;
 
 import com.example.BudgetBuddy.Exceptions.InvalidOtpException;
 import com.example.BudgetBuddy.Exceptions.UserNotFoundException;
-import com.example.BudgetBuddy.Models.User;
-import com.example.BudgetBuddy.Repositories.UserRepository;
+import com.example.BudgetBuddy.Models.Admin;
+import com.example.BudgetBuddy.Models.HOD;
+import com.example.BudgetBuddy.Models.OTPCode;
+import com.example.BudgetBuddy.Repositories.AdminRepository;
+import com.example.BudgetBuddy.Repositories.HODRepository;
+import com.example.BudgetBuddy.Repositories.OTPRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,65 +22,105 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class PasswordService {
 
-    private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
+    private final HODRepository hodRepository;
+    private final OTPRepository otpRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
     @Value("${otp.expiration.time}") // Configured in application.properties
     private long otpExpirationTimeInMinutes;
 
-    public String generateOtp() {
-        int otp = 100000 + new Random().nextInt(900000); // 6-digit OTP
+    /**
+     * Generate a random 6-digit OTP.
+     */
+    private String generateOtp() {
+        int otp = 100000 + new Random().nextInt(900000); // Ensures a 6-digit OTP
         return String.valueOf(otp);
     }
 
+    /**
+     * Step 1: Request OTP for Password Reset.
+     */
     public ResponseEntity<?> createOtpForUser(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        // Check if email exists in Admin or HOD repository
+        Admin admin = adminRepository.findByEmail(email).orElse(null);
+        HOD hod = hodRepository.findByEmail(email).orElse(null);
 
+        if (admin == null && hod == null) {
+            throw new UserNotFoundException("No Admin or HOD found with email: " + email);
+        }
+
+        // Generate OTP
         String otp = generateOtp();
-        user.setOtp(passwordEncoder.encode(otp)); // Save OTP as a hashed value
-        user.setOtpCreationTime(LocalDateTime.now());
-        user.setOtpExpirationTime(LocalDateTime.now().plusMinutes(otpExpirationTimeInMinutes));
-        userRepository.save(user);
 
-        // Send OTP to user's email
-        emailService.sendOtpEmail(user.getEmail(), otp); // Implemented EmailService
+        // Delete any existing OTP for this email
+        otpRepository.findByEmail(email).ifPresent(otpRepository::delete);
+
+        // Save new OTP in database
+        OTPCode otpCode = new OTPCode();
+        otpCode.setEmail(email);
+        otpCode.setOtp(passwordEncoder.encode(otp)); // Store securely
+        otpCode.setExpiryTime(LocalDateTime.now().plusMinutes(otpExpirationTimeInMinutes));
+        otpRepository.save(otpCode);
+
+        // Send OTP via email
+        emailService.sendOtpEmail(email, otp);
+
         return ResponseEntity.status(HttpStatus.OK).body("OTP has been sent to your email.");
-
     }
 
+    /**
+     * Step 2: Verify OTP before allowing password reset.
+     */
     public boolean verifyOtp(String email, String otp) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        OTPCode otpCode = otpRepository.findByEmail(email)
+                .orElseThrow(() -> new InvalidOtpException("OTP not found for email: " + email));
 
-        if (user.getOtpExpirationTime().isBefore(LocalDateTime.now())) {
+        if (otpCode.getExpiryTime().isBefore(LocalDateTime.now())) {
             throw new InvalidOtpException("OTP expired");
         }
 
-        if (!passwordEncoder.matches(otp, user.getOtp())) {
+        if (!passwordEncoder.matches(otp, otpCode.getOtp())) {
             throw new InvalidOtpException("Invalid OTP");
         }
 
-        // OTP is valid
-        return true;
+        return true; // OTP is valid
     }
 
+    /**
+     * Step 3: Reset Password after OTP verification.
+     */
     public void resetPassword(String email, String otp, String newPassword) {
-        verifyOtp(email, otp); // This will throw InvalidOtpException if OTP is invalid or expired
+        // Verify OTP before proceeding
+        verifyOtp(email, otp);
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
+        // Find the user in either Admin or HOD repository
+        Admin admin = adminRepository.findByEmail(email).orElse(null);
+        HOD hod = hodRepository.findByEmail(email).orElse(null);
 
-        user.setPassword(passwordEncoder.encode(newPassword)); // Encode new password
-        userRepository.save(user);
-        clearOtp(user); // Optionally clear OTP after successful password reset
+        if (admin == null && hod == null) {
+            throw new UserNotFoundException("No Admin or HOD found with email: " + email);
+        }
+
+        // Update password
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        if (admin != null) {
+            admin.setPassword(encodedPassword);
+            adminRepository.save(admin);
+        } else {
+            hod.setPassword(encodedPassword);
+            hodRepository.save(hod);
+        }
+
+        // Clear OTP after successful reset
+        clearOtp(email);
     }
 
-    public void clearOtp(User user) {
-        user.setOtp(null);
-        user.setOtpCreationTime(null);
-        user.setOtpExpirationTime(null);
-        userRepository.save(user);
+    /**
+     * Remove OTP from the database after successful verification or expiration.
+     */
+    public void clearOtp(String email) {
+        otpRepository.findByEmail(email).ifPresent(otpRepository::delete);
     }
 }

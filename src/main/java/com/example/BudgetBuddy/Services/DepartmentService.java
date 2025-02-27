@@ -1,40 +1,36 @@
 package com.example.BudgetBuddy.Services;
 
-import com.example.BudgetBuddy.DTO.DepartmentDTO;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Repositories.DepartmentRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DepartmentService {
-    @Autowired
-    private DepartmentRepository repository;
 
-    public Department createDepartment(Department dept){
-        return repository.save(dept);
+    private final DepartmentRepository departmentRepository;
+
+    public ResponseEntity<List<Department>> getAllDepartments() {
+        List<Department> departments = departmentRepository.findAll();
+        return ResponseEntity.ok(departments);
     }
 
-    public Department getDepartment(Integer id){
-        return repository.findById(id).orElse(null);
+    public ResponseEntity<Department> createDepartment(String departmentName) {
+        Department department = new Department(departmentName);
+        Department savedDepartment = departmentRepository.save(department);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedDepartment);
     }
 
-    public List<Department> getDepartments(){
-        return repository.findAll();
-    }
-
-    public Department updateDepartment(Integer id, DepartmentDTO update){
-        Department dept = repository.findById(id).orElse(null);
-        if(dept!=null){
-            dept.setName(update.getName());
-            return dept;
+    public ResponseEntity<Department> getDepartmentById(Long id) {
+        Department department = departmentRepository.findById(id).orElse(null);
+        if (department == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        return null;
-    }
-
-    public void deleteDepartment(Integer id){
-        repository.deleteById(id);
+        return ResponseEntity.ok(department);
     }
 }

@@ -1,10 +1,12 @@
 package com.example.BudgetBuddy.Repositories;
-import com.example.BudgetBuddy.Models.Department;
+
+import com.example.BudgetBuddy.Models.HOD;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
 @Repository
-public interface DepartmentRepository extends JpaRepository<Department, Long> {
-    Optional<Department> findByName(String name);
+public interface HODRepository extends JpaRepository<HOD, String> {
+    Optional<HOD> findByEmail(String email);
 }
