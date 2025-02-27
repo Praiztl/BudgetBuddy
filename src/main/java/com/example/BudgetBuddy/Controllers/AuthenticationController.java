@@ -22,69 +22,47 @@ public class AuthenticationController {
      * Registers a new Admin.
      */
     @PostMapping("/signup/admin")
-    public ResponseEntity<AdminResponseDTO> registerAdmin(@Valid @RequestBody AdminRegistrationDTO adminRegistrationDTO) {
-        return authenticationService.registerAdmin(adminRegistrationDTO);
+    public ResponseEntity<?> registerAdmin(@RequestBody AdminRegistrationDTO adminDTO) {
+        return authenticationService.registerAdmin(adminDTO);
     }
-
     /**
      * Registers a new HOD.
      */
     @PostMapping("/signup/hod")
-    public ResponseEntity<HODResponseDTO> registerHOD(@Valid @RequestBody HODRegistrationDTO hodRegistrationDTO) {
-        return authenticationService.registerHOD(hodRegistrationDTO);
+    public ResponseEntity<?> registerHOD(@RequestBody HODRegistrationDTO dto) {
+        return authenticationService.registerHOD(dto);
     }
-
     /**
      * Handles user login for both Admins & HODs.
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest loginRequest) {
         return authenticationService.login(loginRequest);
     }
 
     /**
-     * Handles OTPCode Verification for HODs.
+     * Handles OTPCode Verification for registration.
      */
-    @PostMapping("/otp/hod")
-    public ResponseEntity<String> verifyHODOTP(@RequestBody Map<String, String> requestBody) {
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOTP(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         String otp = requestBody.get("otp");
-
-        System.out.println("Received email: " + email);
-        System.out.println("Received OTP: " + otp);
 
         if (email == null || otp == null) {
             return ResponseEntity.badRequest().body("Email or OTP is missing.");
         }
 
-        boolean verified = authenticationService.verifyHODOTP(email, otp);
+        boolean verified = authenticationService.verifyOTP(email, otp);
 
-        return verified ? ResponseEntity.ok("HOD verification successful.")
-                : ResponseEntity.badRequest().body("OTP verification failed.");
-
-    }
-
-    /**
-     * Handles OTPCode Verification for Admins.
-     */
-    @PostMapping("/otp/admin")
-    public ResponseEntity<String> verifyAdminOTP(@RequestBody Map<String, String> requestBody) {
-        String email = requestBody.get("email");
-        String otp = requestBody.get("otp");
-
-        System.out.println("Received email: " + email);
-        System.out.println("Received OTP: " + otp);
-
-        if (email == null || otp == null) {
-            return ResponseEntity.badRequest().body("Email or OTP is missing.");
+        if (verified) {
+            authenticationService.clearOTP(email); // Clear OTP after successful verification
+            return ResponseEntity.ok("Verification successful.");
+        } else {
+            return ResponseEntity.badRequest().body("OTP verification failed.");
         }
-
-        boolean verified = authenticationService.verifyAdminOTP(email, otp);
-
-        return verified ? ResponseEntity.ok("Admin verification successful.")
-                : ResponseEntity.badRequest().body("OTP verification failed.");
-
     }
+
+
 
     @Autowired
     private final PasswordService passwordService;
