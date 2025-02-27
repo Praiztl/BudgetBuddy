@@ -45,7 +45,7 @@ public class AuthenticationController {
     /**
      * Handles OTPCode Verification for HODs.
      */
-    @PostMapping("/otp")
+    @PostMapping("/otp/hod")
     public ResponseEntity<String> verifyHODOTP(@RequestBody Map<String, String> requestBody) {
         String email = requestBody.get("email");
         String otp = requestBody.get("otp");
@@ -61,6 +61,29 @@ public class AuthenticationController {
 
         return verified ? ResponseEntity.ok("HOD verification successful.")
                 : ResponseEntity.badRequest().body("OTP verification failed.");
+
+    }
+
+    /**
+     * Handles OTPCode Verification for Admins.
+     */
+    @PostMapping("/otp/admin")
+    public ResponseEntity<String> verifyAdminOTP(@RequestBody Map<String, String> requestBody) {
+        String email = requestBody.get("email");
+        String otp = requestBody.get("otp");
+
+        System.out.println("Received email: " + email);
+        System.out.println("Received OTP: " + otp);
+
+        if (email == null || otp == null) {
+            return ResponseEntity.badRequest().body("Email or OTP is missing.");
+        }
+
+        boolean verified = authenticationService.verifyAdminOTP(email, otp);
+
+        return verified ? ResponseEntity.ok("Admin verification successful.")
+                : ResponseEntity.badRequest().body("OTP verification failed.");
+
     }
 
     @Autowired

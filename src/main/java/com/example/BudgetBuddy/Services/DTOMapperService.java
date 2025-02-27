@@ -22,10 +22,10 @@ public class DTOMapperService {
     // Convert HOD entity to HODResponseDTO (specific for HOD)
     public HODResponseDTO convertToHODResponseDTO(HOD hod) {
         return HODResponseDTO.builder()
-                .firstName(hod.getFirstName())  // Assuming HOD has firstName
-                .lastName(hod.getLastName())    // Assuming HOD has lastName
+                .firstName(hod.getFirstName())
+                .lastName(hod.getLastName())
                 .email(hod.getEmail())
-                .role(User.Role.HOD)  // Assuming HOD role is HOD
+                .role(User.Role.HOD)
                 .build();
     }
 
@@ -33,7 +33,7 @@ public class DTOMapperService {
     public AdminResponseDTO convertToAdminResponseDTO(Admin admin) {
         return AdminResponseDTO.builder()
                 .email(admin.getEmail())
-                .role(User.Role.ADMIN)  // Assuming Admin inherits role from User
+                .role(User.Role.ADMIN)
                 .build();
     }
 

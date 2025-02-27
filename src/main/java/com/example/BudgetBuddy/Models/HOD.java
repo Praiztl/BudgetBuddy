@@ -39,9 +39,7 @@ public class HOD implements UserDetails {
 
 
     private Boolean isOtpVerified = false;
-    private Boolean isVerified = false;
-    private Boolean isActive = false;
-    private Boolean isEnabled = false;
+
 
     @Enumerated(EnumType.STRING)
     private HOD.Role role; // role field to differentiate between user roles
@@ -66,17 +64,17 @@ public class HOD implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Adjust based on your logic
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Adjust based on your logic
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Adjust based on your logic
+        return true;
     }
 
     @Override

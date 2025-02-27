@@ -22,14 +22,14 @@ public class Admin implements UserDetails {
 
     private String email;
     private String password;
-    private boolean enabled; // Adjust depending on your needs
+    private Boolean isOtpVerified = false;
 
     @Enumerated(EnumType.STRING)
     private Role role; // Add role field to differentiate between user roles
 
     public enum Role {
         ADMIN, // Admin role
-        // Add other roles if necessary, such as HOD
+
     }
 
     @Override
@@ -50,21 +50,18 @@ public class Admin implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Implement logic based on your requirements
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Implement logic based on your requirements
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Implement logic based on your requirements
+        return true;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return this.enabled; // Whether the account is enabled or not
-    }
+
 }

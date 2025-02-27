@@ -1,14 +1,18 @@
 package com.example.BudgetBuddy.SpringSecurity;
-
 import com.example.BudgetBuddy.Models.Admin;
 import com.example.BudgetBuddy.Models.HOD;
 import com.example.BudgetBuddy.Repositories.AdminRepository;
 import com.example.BudgetBuddy.Repositories.HODRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,22 +23,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // First, try to load from Admin repository
-        Admin admin = adminRepository.findByEmail(email).orElse(null);
-        if (admin != null) {
-            return admin;  // Admin implements UserDetails
+        Optional<Admin> admin = adminRepository.findByEmail(email);
+        if (admin.isPresent()) {
+            return User.builder()
+                    .username(admin.get().getEmail())
+                    .password(admin.get().getPassword())
+                    .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                    .build();
         }
 
-        // If Admin not found, try to load from HOD repository
-        HOD hod = hodRepository.findByEmail(email).orElse(null);
-        if (hod != null) {
-            if (!hod.isEnabled()) {
-                throw new UsernameNotFoundException("HOD account is disabled");
-            }
-            return hod;
+        Optional<HOD> hod = hodRepository.findByEmail(email);
+        if (hod.isPresent()) {
+            return User.builder()
+                    .username(hod.get().getEmail())
+                    .password(hod.get().getPassword())
+                    .authorities(new SimpleGrantedAuthority("ROLE_HOD"))
+                    .build();
         }
 
-        // If neither Admin nor HOD is found, throw exception
-        throw new UsernameNotFoundException("User not found with email: " + email);
+        throw new UsernameNotFoundException("User not found");
     }
 }

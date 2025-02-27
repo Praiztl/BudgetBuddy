@@ -47,9 +47,10 @@ public class AuthenticationService {
 
         Admin newAdmin = dtoMapperService.convertToAdminEntity(adminDTO);
         newAdmin.setPassword(passwordEncoder.encode(adminDTO.getPassword())); // Encode password
-        newAdmin.setEnabled(true);
         Admin savedAdmin = adminRepository.save(newAdmin);
 
+        // Generate and send OTP
+        generateAndSendOTP(savedAdmin.getEmail());
         AdminResponseDTO responseDTO = dtoMapperService.convertToAdminResponseDTO(savedAdmin);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
@@ -71,7 +72,6 @@ public class AuthenticationService {
         hod.setDepartment(departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(() -> new RuntimeException("Department not found")));
         hod.setRole(HOD.Role.HOD);
-        hod.setEnabled(false); // HOD will be enabled after OTP verification
 
         // Save HOD to repository
         HOD savedHOD = hodRepository.save(hod);
@@ -95,7 +95,7 @@ public class AuthenticationService {
             );
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-       /*     // Fetch the user from the repository(Will complete when i finish otp and admin)
+       /*     // Fetch the user from the repository
             HOD hod = hodRepository.findByEmail(loginRequest.getEmail())
                     .orElseThrow(() -> new IllegalStateException("User not found"));
 
@@ -154,6 +154,26 @@ public class AuthenticationService {
         return true;
     }
 
+    /**
+     * Verifies OTP for Admin registration.
+     */
+    public boolean verifyAdminOTP(String email, String otp) {
+        OTPCode otpCode = otpRepository.findByEmailAndOtp(email, otp)
+                .orElseThrow(() -> new IllegalStateException("Invalid OTP or email"));
+
+        if (otpCode.getExpiryTime().isBefore(LocalDateTime.now())) {
+            otpRepository.deleteByEmail(email);
+            throw new IllegalStateException("OTP expired");
+        }
+
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Admin not found"));
+
+        admin.setIsOtpVerified(true);
+        adminRepository.save(admin);
+
+        return true;
+    }
 
     /**
      * Generates a 6-digit OTP, saves it in the database, and sends it via email.
