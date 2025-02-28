@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "departments")
@@ -18,5 +17,8 @@ public class Department {
     private String name;
 
     public Department(String departmentName) {
+    }
+
+    public Department() {
     }
 }

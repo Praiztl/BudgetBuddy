@@ -2,10 +2,14 @@ package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.UpdateBudgetDTO;
 import com.example.BudgetBuddy.Models.Budget;
+import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Services.BudgetService;
+import com.example.BudgetBuddy.Services.OneTimeExpenseService;
 import com.example.BudgetBuddy.Utilities.CsvUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,11 +22,17 @@ public class BudgetController {
     @Autowired
     private BudgetService service;
 
+    @Autowired
+    private CsvUtil csvUtil;
+
+    @Autowired
+    private OneTimeExpenseService oneTimeExpenseService;
+
     @PostMapping(path = "/upload")
     public List<Budget> read(@RequestBody MultipartFile file){
-        if (CsvUtil.hasCSVFormat(file)){
+        if (csvUtil.hasCSVFormat(file)){
             try{
-                return CsvUtil.readBudget(file.getInputStream());
+                return csvUtil.readBudget(file.getInputStream());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -49,6 +59,21 @@ public class BudgetController {
     public String deleteBudget(@PathVariable(name = "id") String id){
         service.deleteBudget(id);
         return "Budget %s deleted successfully.".formatted(id);
+    }
+
+
+    /*
+    Endpoints for One Time Expenses
+     */
+
+    @PostMapping(path = "/{id}/expenses/create")
+    public ResponseEntity<OneTimeExpense> createOneTimeExpense(@PathVariable(name = "id") String id, @RequestBody OneTimeExpense expense){
+        return oneTimeExpenseService.createOneTimeExpense(expense, id);
+    }
+
+    @GetMapping(path = "/{id}/expenses")
+    public ResponseEntity<List<OneTimeExpense>> getExpensesForBudget(@PathVariable(name = "id") String id){
+        return oneTimeExpenseService.getForBudget(id);
     }
 }
 

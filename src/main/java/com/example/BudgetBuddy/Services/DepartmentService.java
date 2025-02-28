@@ -20,8 +20,8 @@ public class DepartmentService {
         return ResponseEntity.ok(departments);
     }
 
-    public ResponseEntity<Department> createDepartment(String departmentName) {
-        Department department = new Department(departmentName);
+    public ResponseEntity<Department> createDepartment(Department department) {
+//        Department department = new Department(departmentName);
         Department savedDepartment = departmentRepository.save(department);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedDepartment);
     }

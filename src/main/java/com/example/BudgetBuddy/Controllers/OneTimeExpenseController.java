@@ -3,6 +3,7 @@ package com.example.BudgetBuddy.Controllers;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Services.OneTimeExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,8 @@ public class OneTimeExpenseController {
     private OneTimeExpenseService service;
 
     @PostMapping(path = "/create")
-    public OneTimeExpense createOneTimeExpense(OneTimeExpense expense){
-        return service.createOneTimeExpense(expense);
+    public ResponseEntity<OneTimeExpense> createOneTimeExpense(@RequestBody OneTimeExpense expense, @RequestBody String budgetId){
+        return service.createOneTimeExpense(expense, budgetId);
     }
 
     /*

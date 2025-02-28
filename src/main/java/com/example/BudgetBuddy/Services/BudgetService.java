@@ -29,8 +29,12 @@ public class BudgetService {
     public Budget updateBudget(String id, UpdateBudgetDTO updateBody){
         Budget budget = budgetRepo.findById(id).orElseThrow(()->new BudgetNotFoundException("Budget with this ID does not exist."));
 
-        budget.setName(updateBody.getName());
-        budget.setAmount(updateBody.getAmount());
+        if(updateBody.getName() != null) {
+            budget.setName(updateBody.getName());
+        }
+        if(updateBody.getAmount() != null) {
+            budget.setAmount(updateBody.getAmount());
+        }
 
         return budgetRepo.save(budget);
     }

@@ -17,7 +17,7 @@ import java.time.LocalTime;
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     private String title;
 
@@ -27,24 +27,30 @@ public class Notification {
 
     private LocalTime time;
 
-    private User owner;
+    private Admin admin;
+
+    private HOD hod;
+
+//    private String userId;
+
 
     public Notification() {
     }
 
-    public Notification(Integer id, String title, String message, LocalDate date, LocalTime time) {
+    public Notification(Long id, String title, String message, LocalDate date, LocalTime time) {
         this.id = id;
         this.title = title;
         this.message = message;
         this.time = LocalTime.now();
         this.date = LocalDate.now();
+//        this.userId = this.owner.getId();
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

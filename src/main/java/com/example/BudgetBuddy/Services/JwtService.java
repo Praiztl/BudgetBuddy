@@ -22,8 +22,10 @@ import static org.yaml.snakeyaml.tokens.Token.ID.Key;
 @RequiredArgsConstructor
 public class JwtService {
 
-    @Value("${jwt.secret.key}")
-    private String secretKey;
+//    @Value("${jwt.secret.key}")
+//    private String secretKey;
+
+    SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     @Value("${jwt.expiration}")
     private long jwtExpirationInMs;
@@ -32,10 +34,10 @@ public class JwtService {
     /*
     NOTE: I added a line that fixed the byte array size issue
      */
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+//    private SecretKey getSigningKey() {
+//        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+//        return Keys.hmacShaKeyFor(secretKey);
+//    }
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
@@ -48,7 +50,7 @@ public class JwtService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -73,7 +75,7 @@ public class JwtService {
     private Claims extractAllClaims(String token) {
         return Jwts
                 .parserBuilder()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(secretKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

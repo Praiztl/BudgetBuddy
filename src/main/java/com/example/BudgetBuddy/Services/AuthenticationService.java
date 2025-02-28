@@ -50,7 +50,7 @@ public class AuthenticationService {
         Admin savedAdmin = adminRepository.save(newAdmin);
 
         // Generate and send OTP
-        generateAndSendOTP(savedAdmin.getEmail());
+//        generateAndSendOTP(savedAdmin.getEmail());
         AdminResponseDTO responseDTO = dtoMapperService.convertToAdminResponseDTO(savedAdmin);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
