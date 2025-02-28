@@ -3,6 +3,7 @@ package com.example.BudgetBuddy.SpringSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,7 +34,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS properly
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/auth/**", "/api/v1/password/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/departments").permitAll() // Allow anyone to GET departments
+                        .requestMatchers(HttpMethod.POST, "/departments").hasRole("ADMIN") // Restrict creating departments to Admins
+                        .requestMatchers("/auth/**", "/api/v1/password/*").permitAll() // Public authentication endpoints
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

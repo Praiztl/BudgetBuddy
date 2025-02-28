@@ -38,7 +38,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final EmailService emailService; // Ensure EmailService is injected
+    private final EmailService emailService;
 
     /**
      * Registers a new Admin.
@@ -104,6 +104,8 @@ public class AuthenticationService {
         Optional<Admin> adminOptional = adminRepository.findByEmail(loginRequest.getEmail());
 
         boolean isVerified = false;
+        boolean isAdmin = false;
+
 
         if (hodOptional.isPresent()) {
             HOD hod = hodOptional.get();
@@ -111,6 +113,7 @@ public class AuthenticationService {
         } else if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
             isVerified = admin.getIsOtpVerified();
+            isAdmin = true;
         }
 
         if (!isVerified) {
@@ -135,14 +138,23 @@ public class AuthenticationService {
             // Populate response
             response.put("token", jwtToken);
             response.put("roles", roles);
+            response.put("isAdmin", isAdmin);
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             response.put("error", "Invalid email or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
+
     }
 
+    /**
+     * Checks if a given token belongs to an Admin.
+     */
+    public boolean isAdmin(String token) {
+        String email = jwtService.extractUsername(token);
+        return adminRepository.findByEmail(email).isPresent();
+    }
 
     /**
      * Deletes an Admin by ID.
