@@ -92,7 +92,9 @@ public class RecurringExpense {
     }
 
     public enum Interval{
+        Daily,
         Weekly,
-        Monthly
+        Monthly,
+        Yearly
     }
 }
