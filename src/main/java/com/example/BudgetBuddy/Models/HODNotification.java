@@ -1,20 +1,16 @@
 package com.example.BudgetBuddy.Models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 @Data
 @Setter
 @Getter
-public class Notification {
+public class HODNotification {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -27,20 +23,17 @@ public class Notification {
 
     private LocalTime time;
 
-    private Admin admin;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private HOD owner;
 
-    private HOD hod;
-
-//    private String userId;
-
-
-    public Notification() {
+    public HODNotification() {
     }
 
-    public Notification(Long id, String title, String message, LocalDate date, LocalTime time) {
-        this.id = id;
+    public HODNotification(String title, String message, HOD owner) {
         this.title = title;
         this.message = message;
+        this.owner= owner;
         this.time = LocalTime.now();
         this.date = LocalDate.now();
 //        this.userId = this.owner.getId();
@@ -70,6 +63,29 @@ public class Notification {
         this.message = message;
     }
 
+    public HOD getOwner() {
+        return owner;
     }
+
+    public void setOwner(HOD owner) {
+        this.owner = owner;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+}
 
 

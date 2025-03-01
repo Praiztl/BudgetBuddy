@@ -3,15 +3,16 @@ package com.example.BudgetBuddy.Models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 public class Budget {
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    private String id;
+    private Long id;
 
     private String name;
 
@@ -32,11 +33,11 @@ public class Budget {
     @Enumerated(EnumType.STRING)
     private Status status = Status.Pending;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -80,6 +81,18 @@ public class Budget {
         this.status = status;
     }
 
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public List<RecurringExpense> getRecurringExpenses() {
+        return recurringExpenses;
+    }
+
     public Budget() {
     }
 
@@ -87,8 +100,6 @@ public class Budget {
         this.name = name;
         this.amount = amount;
         this.createdAt = LocalDate.now();
-        this.expenses = null;
-
     }
 
     @Override
@@ -102,6 +113,7 @@ public class Budget {
                 ", status='" + status + '\'' +
                 '}';
     }
+
 
     public enum Status{
         Pending,

@@ -1,15 +1,13 @@
 package com.example.BudgetBuddy.Services;
 
-import com.example.BudgetBuddy.DTO.AdminRegistrationDTO;
-import com.example.BudgetBuddy.DTO.AdminResponseDTO;
-import com.example.BudgetBuddy.DTO.HODRegistrationDTO;
-import com.example.BudgetBuddy.DTO.HODResponseDTO;
-import com.example.BudgetBuddy.Models.Admin;
-import com.example.BudgetBuddy.Models.HOD;
-import com.example.BudgetBuddy.Models.User;
+import com.example.BudgetBuddy.DTO.*;
+import com.example.BudgetBuddy.Models.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +54,25 @@ public class DTOMapperService {
         hod.setRole(HOD.Role.HOD); // Set role as HOD
         hod.setDepartment(hodRegistrationDTO.getDepartment()); // Set department for HOD
         return hod;
+    }
+
+    public BudgetDTO convertToBudgetDTO(Budget budget){
+        List<String> oneTimeExpenses = new ArrayList<>();
+        for(OneTimeExpense expense: budget.getExpenses()){
+            oneTimeExpenses.add(expense.toString());
+        }
+
+        List<String> recurringExpenses = new ArrayList<>();
+        for(RecurringExpense expense: budget.getRecurringExpenses()){
+            oneTimeExpenses.add(expense.toString());
+        }
+
+        return BudgetDTO.builder()
+                .name(budget.getName())
+                .date(budget.getCreatedAt())
+                .amount(budget.getAmount())
+                .expenses(oneTimeExpenses)
+                .recurringExpenses(recurringExpenses)
+                .build();
     }
 }

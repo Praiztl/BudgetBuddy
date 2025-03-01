@@ -2,6 +2,7 @@ package com.example.BudgetBuddy.Services;
 
 import com.example.BudgetBuddy.DTO.HODRegistrationDTO;
 import com.example.BudgetBuddy.DTO.HODResponseDTO;
+import com.example.BudgetBuddy.Exceptions.UserNotFoundException;
 import com.example.BudgetBuddy.Models.HOD;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Repositories.HODRepository;
@@ -11,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,4 +47,24 @@ public class HODService {
         HODResponseDTO userResponseDTO = dtoMapperService.convertToHODResponseDTO(createdHOD); // Fix DTO mapping for HOD
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
     }
+
+    public ResponseEntity<HOD> findByEmail(String email){
+        Optional<HOD> hod = hodRepository.findByEmail(email);
+        HOD userHOD = null;
+
+        if(hod.isEmpty()){
+            List<HOD> hods = hodRepository.findAll();
+            for (HOD hodObject: hods){
+                if(hodObject.getEmail().equals(email)){
+                    userHOD = hodObject;
+                    break;
+                }
+            }
+        }
+        return new ResponseEntity<>(userHOD, HttpStatus.FOUND);
+    }
+
+/*
+Endpoints to access budgets relevant to that HOD
+ */
 }

@@ -3,6 +3,7 @@ package com.example.BudgetBuddy.Models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,20 +18,21 @@ public class RecurringExpense {
 
     private Double amount;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @ManyToOne
     @JoinColumn(name = "assignedTo_id")
     private Budget assignedTo;
 
-    private Interval interval = Interval.Weekly;
+    @Enumerated(EnumType.STRING)
+    private Interval expenseInterval = Interval.Weekly;
 
-    public Interval getInterval() {
-        return interval;
+    public Interval getExpenseInterval() {
+        return expenseInterval;
     }
 
-    public void setInterval(Interval interval) {
-        this.interval = interval;
+    public void setExpenseInterval(Interval expenseInterval) {
+        this.expenseInterval = expenseInterval;
     }
 
     public Integer getId() {
@@ -57,11 +59,11 @@ public class RecurringExpense {
         this.amount = amount;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -80,15 +82,13 @@ public class RecurringExpense {
         this.name = name;
         this.amount = amount;
         this.assignedTo = assignedTo;
-        this.interval = interval;
-        this.createdAt = LocalDateTime.now();
+        this.expenseInterval = interval;
+        this.createdAt = LocalDate.now();
     }
 
     @Override
     public String toString() {
-        return "RecurringExpense{" +
-                "interval='" + interval + '\'' +
-                '}';
+        return name + '(' + amount + ')';
     }
 
     public enum Interval{

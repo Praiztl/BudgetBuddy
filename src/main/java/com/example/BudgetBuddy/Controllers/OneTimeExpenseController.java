@@ -16,7 +16,7 @@ public class OneTimeExpenseController {
     private OneTimeExpenseService service;
 
     @PostMapping(path = "/create")
-    public ResponseEntity<OneTimeExpense> createOneTimeExpense(@RequestBody OneTimeExpense expense, @RequestBody String budgetId){
+    public ResponseEntity<OneTimeExpense> createOneTimeExpense(@RequestBody OneTimeExpense expense, @RequestBody Long budgetId){
         return service.createOneTimeExpense(expense, budgetId);
     }
 

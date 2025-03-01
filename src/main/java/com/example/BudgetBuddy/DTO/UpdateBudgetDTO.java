@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 
 @Data
 public class UpdateBudgetDTO {
-    String name;
+    private String name;
 
-    Double amount;
+    private Double amount;
 
     public String getName() {
         return name;
@@ -33,6 +33,10 @@ public class UpdateBudgetDTO {
     public UpdateBudgetDTO(String name, Double amount) {
         this.name = name;
         this.amount = amount;
+    }
+
+    public UpdateBudgetDTO(String name) {
+        this.name = name;
     }
 
     @Override

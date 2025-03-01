@@ -14,8 +14,8 @@ public class RecurringExpenseController {
     private RecurringExpenseService service;
 
     @PostMapping(path = "/create")
-    public RecurringExpense createRecurringExpense(RecurringExpense expense){
-        return service.createRecurringExpense(expense);
+    public RecurringExpense createRecurringExpense(RecurringExpense expense, Long budgetId){
+        return service.createRecurringExpense(expense, budgetId);
     }
 
     /*

@@ -4,7 +4,9 @@ import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.example.BudgetBuddy.Models.RecurringExpense.Interval;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -12,7 +14,12 @@ public class RecurringExpenseService {
     @Autowired
     private RecurringExpenseRepository repository;
 
-    public RecurringExpense createRecurringExpense(RecurringExpense expense){
+    @Autowired
+    private BudgetService budgetService;
+
+    public RecurringExpense createRecurringExpense(RecurringExpense expense, Long budgetId){
+        expense.setAssignedTo(budgetService.getBudgetById(budgetId));
+        expense.setCreatedAt(LocalDate.now());
         return repository.save(expense);
     }
 

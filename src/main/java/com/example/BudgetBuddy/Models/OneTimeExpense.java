@@ -2,6 +2,7 @@ package com.example.BudgetBuddy.Models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,7 +16,15 @@ public class OneTimeExpense {
 
     private Double amount;
 
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
 
     @ManyToOne
     @JoinColumn(name = "assignedTo_id")
@@ -25,7 +34,7 @@ public class OneTimeExpense {
         this.name = name;
         this.amount = amount;
         this.assignedTo = assignedTo;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDate.now();
     }
 
     public OneTimeExpense() {
@@ -65,11 +74,6 @@ public class OneTimeExpense {
 
     @Override
     public String toString() {
-        return "OneTimeExpense{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", amount=" + amount +
-                ", assignedTo=" + assignedTo +
-                '}';
+        return name + '(' + amount + ')';
     }
 }

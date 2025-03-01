@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +22,10 @@ public class OneTimeExpenseService {
     @Autowired
     private BudgetService budgetService;
 
-    public ResponseEntity<OneTimeExpense> createOneTimeExpense(OneTimeExpense expense, String budgetId){
+    public ResponseEntity<OneTimeExpense> createOneTimeExpense(OneTimeExpense expense, Long budgetId){
         if (expense.getAssignedTo() == null) {
             expense.setAssignedTo(budgetService.getBudgetById(budgetId));
+            expense.setCreatedAt(LocalDate.now());
             OneTimeExpense response = repository.save(expense);
             return new ResponseEntity<OneTimeExpense>(response, HttpStatus.CREATED);
         }else{
@@ -44,7 +47,7 @@ public class OneTimeExpenseService {
         return repository.findAll();
     }
 
-    public ResponseEntity<List<OneTimeExpense>> getForBudget(String budgetId){
+    public ResponseEntity<List<OneTimeExpense>> getForBudget(Long budgetId){
         List<OneTimeExpense> expenses = new ArrayList<>();
         for (OneTimeExpense expense: repository.findAll()){
             if(expense.getAssignedTo().getId().equals(budgetId)){

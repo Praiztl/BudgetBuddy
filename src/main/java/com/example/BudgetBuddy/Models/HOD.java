@@ -33,10 +33,11 @@ public class HOD implements UserDetails {
 
     private boolean enabled;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id", nullable = false)
+    @OneToOne(mappedBy = "hod", cascade = CascadeType.ALL)
     private Department department;
 
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<HODNotification> notifications;
 
     private Boolean isOtpVerified = false;
 
