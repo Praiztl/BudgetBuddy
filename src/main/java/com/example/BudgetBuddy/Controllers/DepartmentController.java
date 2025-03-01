@@ -1,9 +1,14 @@
 package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.DepartmentDTO;
+import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.BudgetService;
 import com.example.BudgetBuddy.Services.DepartmentService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import com.example.BudgetBuddy.Services.OneTimeExpenseService;
 import com.example.BudgetBuddy.Services.RecurringExpenseService;
 import com.example.BudgetBuddy.Utilities.CsvUtil;
@@ -16,17 +21,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/departments")
+@RequestMapping("/departments")
+@RequiredArgsConstructor
 public class DepartmentController {
 
-    @Autowired
-    private DepartmentService departmentService;
+    private final DepartmentService departmentService;
 
     @Autowired
     private BudgetService budgetService;
@@ -40,20 +49,66 @@ public class DepartmentController {
     @Autowired
     private CsvUtil csvUtil;
 
+    /**
+     * Get all departments (Accessible by Anyone)
+     */
     @GetMapping
-    public ResponseEntity<List<Department>> getDepartments(){
+    public ResponseEntity<List<Department>> getAllDepartments() {
         return departmentService.getAllDepartments();
     }
 
-    @GetMapping(path = "/{id}")
-    public ResponseEntity<Department> getDepartment(@PathVariable(name = "id")Long id){
+    /**
+     * Create one or more departments (Only Admin)
+     */
+    @PostMapping("/create")
+    public ResponseEntity<?> createDepartments(@RequestBody DepartmentDTO departmentsDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return ResponseEntity.status(403).body("Access denied: Only admins can create departments.");
+        }
+
+        if (departmentsDTO.getDepartments() == null || departmentsDTO.getDepartments().isEmpty()) {
+            return ResponseEntity.badRequest().body("Departments list cannot be empty.");
+        }
+
+        List<Department> createdDepartments = new ArrayList<>();
+
+        for (String department : departmentsDTO.getDepartments()) {
+            Department savedDepartment = departmentService.createDepartment(department);
+            createdDepartments.add(savedDepartment);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartments);
+    }
+
+    /**
+     * Get department by ID (Accessible by Anyone)
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Department> getDepartmentById(@PathVariable Long id) {
         return departmentService.getDepartmentById(id);
     }
 
-    @PostMapping(path = "/create")
-    public ResponseEntity<Department> createDepartment(@RequestBody Department name){
-        return departmentService.createDepartment(name);
-    }
+    /**
+     * Delete a department (Only Admin)
+     */
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteDepartment(@PathVariable Long id) {
+        // Get authentication details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Extract user roles
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+
+        if (!isAdmin) {
+            return ResponseEntity.status(403).body("Access denied: Only admins can delete departments.");
+        }
 
 //    @PutMapping(path = "/{id}/update")
 //    private Department updateDepartment(@PathVariable(name = "id")Integer id, DepartmentDTO updates){

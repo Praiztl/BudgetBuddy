@@ -1,13 +1,17 @@
 package com.example.BudgetBuddy.DTO;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@AllArgsConstructor
 public class DepartmentDTO {
-    private String name;
+    @NotBlank(message = "Department name is required")
+    private List<String> departments;
 }
+

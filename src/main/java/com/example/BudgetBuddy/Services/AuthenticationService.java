@@ -1,7 +1,10 @@
 package com.example.BudgetBuddy.Services;
 
 import com.example.BudgetBuddy.DTO.*;
+import com.example.BudgetBuddy.Exceptions.AuthenticationException;
 import com.example.BudgetBuddy.Exceptions.UserNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.GrantedAuthority;
 import com.example.BudgetBuddy.Models.Admin;
 import com.example.BudgetBuddy.Models.HOD;
 import com.example.BudgetBuddy.Models.OTPCode;
@@ -20,8 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +38,17 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final EmailService emailService; // Ensure EmailService is injected
+    private final EmailService emailService;
 
     /**
      * Registers a new Admin.
      */
-    public ResponseEntity<AdminResponseDTO> registerAdmin(AdminRegistrationDTO adminDTO) {
-        if (adminRepository.findByEmail(adminDTO.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // Admin already exists
+    public ResponseEntity<Map<String, String>> registerAdmin(AdminRegistrationDTO adminDTO) {
+        // Check if email already exists in either Admin or HOD table
+        if (adminRepository.findByEmail(adminDTO.getEmail()).isPresent() ||
+                hodRepository.findByEmail(adminDTO.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "User with this email already exists"));
         }
 
         Admin newAdmin = dtoMapperService.convertToAdminEntity(adminDTO);
@@ -50,18 +56,21 @@ public class AuthenticationService {
         Admin savedAdmin = adminRepository.save(newAdmin);
 
         // Generate and send OTP
-//        generateAndSendOTP(savedAdmin.getEmail());
-        AdminResponseDTO responseDTO = dtoMapperService.convertToAdminResponseDTO(savedAdmin);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        generateAndSendOTP(savedAdmin.getEmail());
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "Admin registered successfully. OTP sent to email."));
     }
 
     /**
      * Registers a new HOD.
      */
-    public ResponseEntity<HODResponseDTO> registerHOD(HODRegistrationDTO dto) {
-        // Check if the HOD already exists
-        if (hodRepository.findByEmail(dto.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // HOD already exists
+    public ResponseEntity<Map<String, String>> registerHOD(HODRegistrationDTO dto) {
+        // Check if email already exists in either HOD or Admin table
+        if (hodRepository.findByEmail(dto.getEmail()).isPresent() ||
+                adminRepository.findByEmail(dto.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "User with this email already exists"));
         }
 
         // Convert DTO to Entity
@@ -79,36 +88,72 @@ public class AuthenticationService {
         // Generate and send OTP
         generateAndSendOTP(savedHOD.getEmail());
 
-        // Convert entity to response DTO
-        HODResponseDTO responseDTO = dtoMapperService.convertToHODResponseDTO(savedHOD);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("message", "HOD registered successfully. OTP sent to email."));
     }
+
 
     /**
      * Handles user login (for both Admins & HODs).
      */
-    public ResponseEntity<String> login(LoginRequest loginRequest) {
+    public ResponseEntity<Map<String, Object>> login(LoginRequest loginRequest) {
+        Map<String, Object> response = new HashMap<>();
+
+        // Check if user exists and is verified
+        Optional<HOD> hodOptional = hodRepository.findByEmail(loginRequest.getEmail());
+        Optional<Admin> adminOptional = adminRepository.findByEmail(loginRequest.getEmail());
+
+        boolean isVerified = false;
+        boolean isAdmin = false;
+
+
+        if (hodOptional.isPresent()) {
+            HOD hod = hodOptional.get();
+            isVerified = hod.getIsOtpVerified();
+        } else if (adminOptional.isPresent()) {
+            Admin admin = adminOptional.get();
+            isVerified = admin.getIsOtpVerified();
+            isAdmin = true;
+        }
+
+        if (!isVerified) {
+            response.put("error", "Account is not verified. Please complete OTP verification.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-       /*     // Fetch the user from the repository
-            HOD hod = hodRepository.findByEmail(loginRequest.getEmail())
-                    .orElseThrow(() -> new IllegalStateException("User not found"));
 
-            // Restrict login if the user is not verified or inactive
-            if (!hod.getIsVerified() || !hod.getIsActive()) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("Account is not verified or inactive. Please complete OTP verification or contact admin.");
-            }*/
+            // Extract user roles
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+            // Generate JWT token
             String jwtToken = jwtService.generateToken(userDetails);
-            return ResponseEntity.ok(jwtToken);
-        } catch (org.springframework.security.core.AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+
+            // Populate response
+            response.put("token", jwtToken);
+            response.put("roles", roles);
+            response.put("isAdmin", isAdmin);
+
+            return ResponseEntity.ok(response);
+        } catch (AuthenticationException e) {
+            response.put("error", "Invalid email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
+
+    }
+
+    /**
+     * Checks if a given token belongs to an Admin.
+     */
+    public boolean isAdmin(String token) {
+        String email = jwtService.extractUsername(token);
+        return adminRepository.findByEmail(email).isPresent();
     }
 
     /**
@@ -134,9 +179,9 @@ public class AuthenticationService {
     }
 
     /**
-     * Verifies OTP for HOD registration.
+     * Verifies OTP for registration and clears OTP after successful verification.
      */
-    public boolean verifyHODOTP(String email, String otp) {
+    public boolean verifyOTP(String email, String otp) {
         OTPCode otpCode = otpRepository.findByEmailAndOtp(email, otp)
                 .orElseThrow(() -> new IllegalStateException("Invalid OTP or email"));
 
@@ -145,34 +190,40 @@ public class AuthenticationService {
             throw new IllegalStateException("OTP expired");
         }
 
-        HOD hod = hodRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("HOD not found"));
+        // Try to find user in HOD table first
+        Optional<HOD> hod = hodRepository.findByEmail(email);
+        if (hod.isPresent()) {
+            hod.get().setIsOtpVerified(true);
+            hodRepository.save(hod.get());
 
-        hod.setIsOtpVerified(true);
-        hodRepository.save(hod);
+            // Clear OTP after successful verification
+            clearOTP(email);
 
-        return true;
+            return true;
+        }
+
+        // If not found in HOD, check Admin table
+        Optional<Admin> admin = adminRepository.findByEmail(email);
+        if (admin.isPresent()) {
+            admin.get().setIsOtpVerified(true);
+            adminRepository.save(admin.get());
+
+            // Clear OTP after successful verification
+            clearOTP(email);
+
+            return true;
+        }
+
+        // If not found in either table, throw an error
+        throw new IllegalStateException("User not found");
     }
 
     /**
-     * Verifies OTP for Admin registration.
+     * Clears all OTPs tied to a given email after successful verification.
      */
-    public boolean verifyAdminOTP(String email, String otp) {
-        OTPCode otpCode = otpRepository.findByEmailAndOtp(email, otp)
-                .orElseThrow(() -> new IllegalStateException("Invalid OTP or email"));
-
-        if (otpCode.getExpiryTime().isBefore(LocalDateTime.now())) {
-            otpRepository.deleteByEmail(email);
-            throw new IllegalStateException("OTP expired");
-        }
-
-        Admin admin = adminRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("Admin not found"));
-
-        admin.setIsOtpVerified(true);
-        adminRepository.save(admin);
-
-        return true;
+    @Transactional // Ensures delete operation runs within a transaction
+    public void clearOTP(String email) {
+        otpRepository.deleteByEmail(email);
     }
 
     /**
