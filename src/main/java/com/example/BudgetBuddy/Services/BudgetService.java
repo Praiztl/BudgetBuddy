@@ -8,7 +8,9 @@ import com.example.BudgetBuddy.Repositories.BudgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BudgetService {
@@ -76,4 +78,38 @@ public class BudgetService {
         budgetRepo.deleteById(id);
 
     }
+
+    public List<Budget> getApprovedBudgets(){
+        List<Budget> budgets = budgetRepo.findAll();
+        List<Budget> response = new ArrayList<>();
+        for(Budget budget : budgets){
+            if(budget.getStatus().equals(Budget.Status.Approved)){
+                response.add(budget);
+            }
+        }
+        return response;
+    }
+
+    public List<Budget> getPendingBudgets(){
+        List<Budget> budgets = budgetRepo.findAll();
+        List<Budget> response = new ArrayList<>();
+        for(Budget budget : budgets){
+            if(budget.getStatus().equals(Budget.Status.Pending)){
+                response.add(budget);
+            }
+        }
+        return response;
+    }
+
+    public List<Budget> getRejectedBudgets(){
+        List<Budget> budgets = budgetRepo.findAll();
+        List<Budget> response = new ArrayList<>();
+        for(Budget budget : budgets){
+            if(budget.getStatus().equals(Budget.Status.Rejected)){
+                response.add(budget);
+            }
+        }
+        return response;
+    }
+
 }

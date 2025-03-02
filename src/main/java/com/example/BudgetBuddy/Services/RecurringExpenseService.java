@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import com.example.BudgetBuddy.Models.RecurringExpense.Interval;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class RecurringExpenseService {
@@ -80,4 +82,92 @@ public class RecurringExpenseService {
     public void deleteRecurringExpense(Integer id){
         repository.deleteById(id);
     }
+
+
+    public List<RecurringExpense> getApprovedExpenses(){
+        List<RecurringExpense> expenses = repository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        for(RecurringExpense expense : expenses){
+            if(expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
+                response.add(expense);
+            }
+        }
+        return response;
+    }
+
+    public List<RecurringExpense> getPendingExpenses(){
+        List<RecurringExpense> expenses = repository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        for(RecurringExpense expense : expenses){
+            if(expense.getApprovalStatus().equals(RecurringExpense.Status.Pending)){
+                response.add(expense);
+            }
+        }
+        return response;
+    }
+
+    public List<RecurringExpense> getRejectedExpenses(){
+        List<RecurringExpense> expenses = repository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        for(RecurringExpense expense : expenses){
+            if(expense.getApprovalStatus().equals(RecurringExpense.Status.Rejected)){
+                response.add(expense);
+            }
+        }
+        return response;
+    }
+
+    public Double getMonthlyAmountRecurringExpenses(String monthName){
+        List<RecurringExpense> expenses = repository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        Double total = 0.0;
+        for(RecurringExpense expense : expenses){
+            if(expense.getCreatedAt().getYear() == LocalDate.now().getYear()){
+                response.add(expense);
+            }
+        }
+        for(RecurringExpense expense : response){
+            if(expense.getCreatedAt().getMonth().name().substring(0,3).equals(monthName)){
+                total += expense.getAmount();
+                if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
+                    total+=(expense.getAmount()*4);
+                }
+                else if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)){
+                    total += expense.getAmount()*(expense.getCreatedAt().getMonth().length(expense.getCreatedAt().isLeapYear()));
+                }
+            }
+        }
+        return total;
+    }
+
+    public Double getYearlyAmountRecurringExpenses(Integer year){
+        List<RecurringExpense> expenses = repository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        Double total = 0.0;
+//        for(RecurringExpense expense : expenses){
+//            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+//                response.add(expense);
+//            }
+//        }
+        for(RecurringExpense expense : expenses){
+            if(expense.getCreatedAt().getYear()==year){
+                total += expense.getAmount();
+                if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
+                    total+=(expense.getAmount()*52);
+                }
+                else if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)){
+                    if(expense.getCreatedAt().isLeapYear()){
+                        total += expense.getAmount()*366;
+                    }else{
+                        total += expense.getAmount()*365;
+                    }
+                } else if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Monthly)) {
+                    total += expense.getAmount()*12;
+                }
+            }
+        }
+        return total;
+    }
+
+
 }

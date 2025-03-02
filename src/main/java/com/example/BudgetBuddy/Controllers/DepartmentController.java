@@ -156,27 +156,6 @@ public class DepartmentController {
 
     /*
         Department Dashboard endpoint
-     */
-//    @GetMapping(path = "/{id}/dashboard")
-//    public ResponseEntity<HODDashboard> getDashboard(@PathVariable(name = "id")Long id){
-//        HODDashboard dashboard = new HODDashboard(
-//                budgetService.getAllBudgets().size(),
-//                departmentService.getApprovedBudgets(id).size(),
-//                departmentService.getPendingBudgets(id).size(),
-//                departmentService.getRejectedBudgets(id).size(),
-//                recurringExpenseService.getRecurringExpenses().size(),
-//                ExpenseSummariser.currentMonthSummary(departmentService.getRecurringExpenses(id)),
-//                new HODExpenseChart(
-//                        ExpenseSummariser.getMonthlySummary(departmentService.getRecurringExpenses(id)),
-//                        ExpenseSummariser.getYearlySummary(departmentService.getRecurringExpenses(id))
-//                ),
-//                departmentService.getBudgetDTOs(id)
-//        );
-//
-//        return new ResponseEntity<>(dashboard, HttpStatus.OK);
-//    }
-
-    /*
     Find alternative dashboard endpoints in HOD controller
      */
 
@@ -212,9 +191,17 @@ public class DepartmentController {
 
     @GetMapping(path = "{id}/dashboard/expense-chart")
     public ResponseEntity<HODExpenseChart> getHODExpenseChart(@PathVariable(name = "id") Long departmentId){
+        List<Expense> expenseList = new ArrayList<>();
+        for(RecurringExpense expense :departmentService.getRecurringExpenses(departmentId)){
+            expenseList.add(expense);
+        }
+        for(OneTimeExpense expense :departmentService.getOneTimeExpenses(departmentId)){
+            expenseList.add(expense);
+        }
+
         HODExpenseChart expenseChart = new HODExpenseChart(
-                expenseSummariser.getMonthlySummary(departmentService.getRecurringExpenses(departmentId), departmentId),
-                expenseSummariser.getYearlySummary(departmentService.getRecurringExpenses(departmentId), departmentId)
+                expenseSummariser.getMonthlySummary(expenseList, departmentId),
+                expenseSummariser.getYearlySummary(expenseList, departmentId)
         );
         return new ResponseEntity<>(expenseChart, HttpStatus.OK);
     }

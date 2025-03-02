@@ -1,8 +1,6 @@
 package com.example.BudgetBuddy.Controllers;
 
-import com.example.BudgetBuddy.Models.HOD;
-import com.example.BudgetBuddy.Models.HODExpenseChart;
-import com.example.BudgetBuddy.Models.Notification;
+import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
 import com.example.BudgetBuddy.Utilities.ExpenseSummariser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -152,9 +151,17 @@ public class HODController {
             }
         }
 
+        List<Expense> expenseList = new ArrayList<>();
+        for(RecurringExpense expense :departmentService.getRecurringExpenses(departmentId)){
+            expenseList.add(expense);
+        }
+        for(OneTimeExpense expense :departmentService.getOneTimeExpenses(departmentId)){
+            expenseList.add(expense);
+        }
+
         HODExpenseChart expenseChart = new HODExpenseChart(
-                expenseSummariser.getMonthlySummary(departmentService.getRecurringExpenses(departmentId), departmentId),
-                expenseSummariser.getYearlySummary(departmentService.getRecurringExpenses(departmentId), departmentId)
+                expenseSummariser.getMonthlySummary(expenseList, departmentId),
+                expenseSummariser.getYearlySummary(expenseList, departmentId)
         );
         return new ResponseEntity<>(expenseChart, HttpStatus.OK);
     }

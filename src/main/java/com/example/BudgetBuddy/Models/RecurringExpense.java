@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "recurring_expenses")
 @Data
-public class RecurringExpense {
+public class RecurringExpense extends Expense{
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Integer id;

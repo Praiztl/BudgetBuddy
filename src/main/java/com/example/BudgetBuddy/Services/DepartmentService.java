@@ -170,12 +170,13 @@ public class DepartmentService {
         }
         for(RecurringExpense expense : response){
             if(expense.getCreatedAt().getMonth().name().substring(0,3).equals(monthName)){
-                total += expense.getAmount();
                 if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
                     total+=(expense.getAmount()*4);
                 }
                 else if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)){
                     total += expense.getAmount()*(expense.getCreatedAt().getMonth().length(expense.getCreatedAt().isLeapYear()));
+                }else{
+                    total += expense.getAmount();
                 }
             }
         }
@@ -193,7 +194,6 @@ public class DepartmentService {
         }
         for(RecurringExpense expense : response){
             if(expense.getCreatedAt().getYear()==year){
-                total += expense.getAmount();
                 if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
                     total+=(expense.getAmount()*52);
                 }
@@ -205,6 +205,8 @@ public class DepartmentService {
                     }
                 } else if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Monthly)) {
                     total += expense.getAmount()*12;
+                }else {
+                    total += expense.getAmount();
                 }
             }
         }

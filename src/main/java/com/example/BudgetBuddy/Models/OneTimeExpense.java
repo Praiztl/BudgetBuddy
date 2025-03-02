@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "one_time_expenses")
-public class OneTimeExpense {
+public class OneTimeExpense extends Expense {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Integer id;
