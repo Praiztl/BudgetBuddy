@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping(path = "/budgets")
@@ -135,6 +136,19 @@ public class BudgetController {
     @PostMapping(path = "/{id}/recurringexpenses/create")
     public RecurringExpense createRecurringExpense(@PathVariable(name = "id") Long id, @RequestBody RecurringExpense expense){
         return recurringExpenseService.createRecurringExpense(expense, id);
+    }
+
+    @GetMapping(path = "/{id}/recurringexpenses")
+    public List<RecurringExpense> getRecExpenses(@PathVariable(name = "id") Long departmentId){
+        List<RecurringExpense> result =  recurringExpenseService.getRejectedExpenses();
+        List<RecurringExpense> response = new ArrayList<>();
+
+        for (RecurringExpense expense : result){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId)){
+                response.add(expense);
+            }
+        }
+        return response;
     }
 
 }

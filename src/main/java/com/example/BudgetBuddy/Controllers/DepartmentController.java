@@ -123,10 +123,6 @@ public class DepartmentController {
         return departmentService.deleteDepartment(id);
     }
 
-//    @DeleteMapping(path = "/{id}/delete")
-//    public ResponseEntity<Department> deleteDepartment(@PathVariable(name = "id")Long id){
-//        return departmentService.deleteDepartment(id);
-//    }
 
 
     /*
@@ -174,31 +170,31 @@ public class DepartmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "{id}/dashboard/approved-budget-count")
+    @GetMapping(path = "/{id}/dashboard/approved-budget-count")
     public ResponseEntity<Integer> getApprovedBudgetCount(@PathVariable(name = "id") Long departmentId) {
         Integer response = departmentService.getApprovedBudgets(departmentId).size();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/dashboard/pending-budget-count")
+    @GetMapping(path = "/{id}/dashboard/pending-budget-count")
     public ResponseEntity<Integer>getPendingBudgetCount(@PathVariable(name = "id") Long departmentId){
         Integer response = departmentService.getPendingBudgets(departmentId).size();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "dashboard/rejected-budget-count")
+    @GetMapping(path = "/{id}/dashboard/rejected-budget-count")
     public ResponseEntity<Integer> getRejectedBudgetCount(@PathVariable(name = "id") Long departmentId){
         Integer response = departmentService.getRejectedBudgets(departmentId).size();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/dashboard/total-recurring-expense-count")
+    @GetMapping(path = "/{id}/dashboard/total-recurring-expense-count")
     public ResponseEntity<Integer> getTotalRecurringExpenseCount(@PathVariable(name = "id") Long departmentId){
         Integer response = departmentService.getRecurringExpenses(departmentId).size();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(path = "{id}/dashboard/expense-chart")
+    @GetMapping(path = "/{id}/dashboard/expense-chart")
     public ResponseEntity<HODExpenseChart> getHODExpenseChart(@PathVariable(name = "id") Long departmentId){
         List<Expense> expenseList = new ArrayList<>();
         for(RecurringExpense expense :departmentService.getRecurringExpenses(departmentId)){
