@@ -1,17 +1,15 @@
 package com.example.BudgetBuddy.Controllers;
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.DTO.UpdateBudgetDTO;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.HOD;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.HODRepository;
-import com.example.BudgetBuddy.Services.RecurringExpenseService;
+import com.example.BudgetBuddy.Services.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
-import com.example.BudgetBuddy.Services.BudgetService;
-import com.example.BudgetBuddy.Services.HODService;
-import com.example.BudgetBuddy.Services.OneTimeExpenseService;
 import com.example.BudgetBuddy.Utilities.CsvUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,6 +41,9 @@ public class BudgetController {
 
     @Autowired
     private HODService hodService;
+
+    @Autowired
+    private DTOMapperService dtoMapperService;
 
     @PostMapping(path = "/upload")
     public ResponseEntity<List<Budget>> read(@RequestBody MultipartFile file){
@@ -68,8 +70,14 @@ public class BudgetController {
     }
 
     @GetMapping
-    public List<Budget> getBudgets(){
-        return service.getAllBudgets();
+    public List<BudgetDTO> getBudgets(){
+        List<Budget> result =  service.getAllBudgets();
+        List<BudgetDTO> response = new ArrayList<>();
+        for(Budget budget : result){
+            response.add(dtoMapperService.convertToBudgetDTO(budget));
+        }
+
+        return response;
     }
 
     @GetMapping(path = "/{id}")

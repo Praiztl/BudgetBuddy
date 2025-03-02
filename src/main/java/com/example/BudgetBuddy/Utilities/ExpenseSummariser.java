@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Utilities;
 
+import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Expense;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Services.DepartmentService;
@@ -128,6 +129,22 @@ public class ExpenseSummariser {
         }
 
         return yearlySummary;
+    }
+
+
+    public Map<Integer, Double> getAdminYearlyBudgetTotal(List<Budget> budgetList){
+        Map<Integer, Double> adminYearlyBudgetTotal = new HashMap<>();
+
+        for (Budget budget : budgetList){
+            Integer year = budget.getCreatedAt().getYear();
+            Map<Integer, Double> oneYearMap = adminExpenseCalculator.calculateYearlyBudgetAmount(year);
+            boolean found = false;
+                if (adminYearlyBudgetTotal.get(year)==null) {
+                    adminYearlyBudgetTotal.put(year, oneYearMap.get(year));
+                }
+            }
+
+        return adminYearlyBudgetTotal;
     }
 
 

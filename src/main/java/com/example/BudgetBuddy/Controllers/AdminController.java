@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Controllers;
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
 import com.example.BudgetBuddy.Utilities.AdminExpenseCalculator;
@@ -40,6 +41,9 @@ public class AdminController {
 
     @Autowired
     private AdminExpenseCalculator adminExpenseCalculator;
+
+    @Autowired
+    private DTOMapperService dtoMapperService;
 
     @GetMapping(path = "/notifications")
     public ResponseEntity<List<Notification>> getNotificationsForaAdmin(){
@@ -127,6 +131,62 @@ public class AdminController {
                 expenseSummariser.getAdminYearlySummary(expenseList)
         );
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard/get-yearly-budget-total")
+    public ResponseEntity<Map<Integer, Double>> getYearlyBudgetTotal(){
+        List<Budget> budgetList = budgetService.getApprovedBudgets();
+        Map<Integer, Double> response = expenseSummariser.getAdminYearlyBudgetTotal(budgetList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard/get-total-budget-list")
+    public ResponseEntity<List<BudgetDTO>> getTotalBudgetList(@RequestParam(name = "status", required = false)Budget.Status status){
+        List<BudgetDTO> totalBudgetDTOList = new ArrayList<>();
+        List<Budget> totalBudgetList = new ArrayList<>();
+
+        if(status == null) {
+            totalBudgetList = budgetService.getAllBudgets();
+            for(Budget budget : totalBudgetList){
+                totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
+            }
+        }
+        else if(status.equals(RecurringExpense.Status.Approved)){
+            totalBudgetList = budgetService.getApprovedBudgets();
+            for(Budget budget : totalBudgetList){
+                totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
+            }
+        } else if (status.equals(RecurringExpense.Status.Pending)){
+            totalBudgetList = budgetService.getPendingBudgets();
+            for(Budget budget : totalBudgetList){
+                totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
+            }
+        } else if (status.equals(RecurringExpense.Status.Rejected)) {
+            totalBudgetList = budgetService.getRejectedBudgets();
+            for(Budget budget : totalBudgetList){
+                totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
+            }
+        }
+
+        return new ResponseEntity<>(totalBudgetDTOList, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard/get-total-recurring-expense-list")
+    public ResponseEntity<List<RecurringExpense>> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
+        List<RecurringExpense> totalRecExpenseList = new ArrayList<>();
+
+        if(status == null) {
+            totalRecExpenseList = recurringExpenseService.getRecurringExpenses();
+        }
+        else if(status.equals(RecurringExpense.Status.Approved)){
+            totalRecExpenseList = recurringExpenseService.getApprovedExpenses();
+        } else if (status.equals(RecurringExpense.Status.Pending)){
+            totalRecExpenseList = recurringExpenseService.getPendingExpenses();
+        } else if (status.equals(RecurringExpense.Status.Rejected)) {
+            totalRecExpenseList = recurringExpenseService.getRejectedExpenses();
+        }
+
+        return new ResponseEntity<>(totalRecExpenseList, HttpStatus.OK);
     }
 
 }

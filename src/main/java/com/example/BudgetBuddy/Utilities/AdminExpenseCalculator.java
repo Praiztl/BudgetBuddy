@@ -1,16 +1,16 @@
 package com.example.BudgetBuddy.Utilities;
 
+import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Models.RecurringExpense;
+import com.example.BudgetBuddy.Services.BudgetService;
 import com.example.BudgetBuddy.Services.OneTimeExpenseService;
 import com.example.BudgetBuddy.Services.RecurringExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AdminExpenseCalculator {
@@ -19,6 +19,9 @@ public class AdminExpenseCalculator {
 
     @Autowired
     private OneTimeExpenseService oneTimeExpenseService;
+
+    @Autowired
+    private BudgetService budgetService;
 
 
     public Double getMonthlyAmountRecurringExpenses(String monthName){
@@ -103,6 +106,29 @@ public class AdminExpenseCalculator {
             }
         }
         return total;
+    }
+
+    public Map<Integer, Double> calculateYearlyBudgetAmount(Integer year){
+        Map<Integer, Double> yearlyBudgetAmountMap = new HashMap<>();
+        Double yearlyBudgetAmount = 0.0;
+        List<Budget> budgetList = budgetService.getAllBudgets();
+        List<Budget> yearlyBudgetList = new ArrayList<>();
+
+        // Initialising a list of budgets for specified year
+        for(Budget budget : budgetList){
+            if(budget.getCreatedAt().getYear()==year){
+                yearlyBudgetList.add(budget);
+            }
+        }
+
+        //Getting total of budget amounts in the year
+        for(Budget budget : yearlyBudgetList){
+            yearlyBudgetAmount+= budget.getAmount();
+        }
+
+        //Returning a mapping of year to yearly budget amount
+        yearlyBudgetAmountMap.put(year, yearlyBudgetAmount);
+        return yearlyBudgetAmountMap;
     }
 
 }

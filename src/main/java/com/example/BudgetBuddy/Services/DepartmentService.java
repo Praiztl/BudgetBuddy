@@ -115,34 +115,34 @@ public class DepartmentService {
     }
 
 
-    public List<Budget> getApprovedBudgets(Long departmentId){
+    public List<BudgetDTO> getApprovedBudgets(Long departmentId){
         List<Budget> budgets = budgetRepo.findAll();
-        List<Budget> response = new ArrayList<>();
+        List<BudgetDTO> response = new ArrayList<>();
         for(Budget budget : budgets){
             if(budget.getStatus().equals(Budget.Status.Approved) && Objects.equals(budget.getDepartment().getId(), departmentId)){
-                response.add(budget);
+                response.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }
         return response;
     }
 
-    public List<Budget> getPendingBudgets(Long departmentId){
+    public List<BudgetDTO> getPendingBudgets(Long departmentId){
         List<Budget> budgets = budgetRepo.findAll();
-        List<Budget> response = new ArrayList<>();
+        List<BudgetDTO> response = new ArrayList<>();
         for(Budget budget : budgets){
             if(budget.getStatus().equals(Budget.Status.Pending) && Objects.equals(budget.getDepartment().getId(), departmentId)){
-                response.add(budget);
+                response.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }
         return response;
     }
 
-    public List<Budget> getRejectedBudgets(Long departmentId){
+    public List<BudgetDTO> getRejectedBudgets(Long departmentId){
         List<Budget> budgets = budgetRepo.findAll();
-        List<Budget> response = new ArrayList<>();
+        List<BudgetDTO> response = new ArrayList<>();
         for(Budget budget : budgets){
             if(budget.getStatus().equals(Budget.Status.Rejected) && Objects.equals(budget.getDepartment().getId(), departmentId)){
-                response.add(budget);
+                response.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }
         return response;

@@ -75,4 +75,23 @@ public class DTOMapperService {
                 .recurringExpenses(recurringExpenses)
                 .build();
     }
+
+    public OneTimeExpenseDTO convertToExpenseDTO(OneTimeExpense expense){
+        return OneTimeExpenseDTO.builder()
+                .name(expense.getName())
+                .amount(expense.getAmount())
+                .assignedTo(expense.getAssignedTo().getName())
+                .createdAt(expense.getCreatedAt())
+                .build();
+    }
+
+    public RecExpenseDTO convertToRecExpenseDTO(RecurringExpense expense){
+        return RecExpenseDTO.builder()
+                .name(expense.getName())
+                .amount(expense.getAmount())
+                .assignedTo(expense.getAssignedTo().getName())
+                .expenseInterval(expense.getExpenseInterval())
+                .approvalStatus(expense.getApprovalStatus())
+                .build();
+    }
 }
