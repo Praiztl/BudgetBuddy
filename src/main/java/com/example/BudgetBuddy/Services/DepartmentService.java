@@ -1,6 +1,11 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
+import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Department;
+import com.example.BudgetBuddy.Models.OneTimeExpense;
+import com.example.BudgetBuddy.Models.RecurringExpense;
+import com.example.BudgetBuddy.Repositories.BudgetRepository;
 import com.example.BudgetBuddy.Repositories.DepartmentRepository;
 import jakarta.transaction.Transactional;
 import com.example.BudgetBuddy.Repositories.OneTimeExpenseRepository;
@@ -13,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -108,10 +114,6 @@ public class DepartmentService {
         return false;
     }
 
-    public ResponseEntity<Department> deleteDepartment(Long id){
-        departmentRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
 
     public List<Budget> getApprovedBudgets(Long departmentId){
         List<Budget> budgets = budgetRepo.findAll();
@@ -157,6 +159,59 @@ public class DepartmentService {
         return response;
     }
 
+    public Double getMonthlyAmountRecurringExpenses(Long departmentId, String monthName){
+        List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        Double total = 0.0;
+        for(RecurringExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId) && expense.getCreatedAt().getYear() == LocalDate.now().getYear()){
+                response.add(expense);
+            }
+        }
+        for(RecurringExpense expense : response){
+            if(expense.getCreatedAt().getMonth().name().substring(0,3).equals(monthName)){
+                total += expense.getAmount();
+                if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
+                    total+=(expense.getAmount()*4);
+                }
+                else if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)){
+                    total += expense.getAmount()*(expense.getCreatedAt().getMonth().length(expense.getCreatedAt().isLeapYear()));
+                }
+            }
+        }
+        return total;
+    }
+
+    public Double getYearlyAmountRecurringExpenses(Long departmentId, Integer year){
+        List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        Double total = 0.0;
+        for(RecurringExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+                response.add(expense);
+            }
+        }
+        for(RecurringExpense expense : response){
+            if(expense.getCreatedAt().getYear()==year){
+                total += expense.getAmount();
+                if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
+                    total+=(expense.getAmount()*52);
+                }
+                else if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)){
+                    if(expense.getCreatedAt().isLeapYear()){
+                        total += expense.getAmount()*366;
+                    }else{
+                        total += expense.getAmount()*365;
+                    }
+                } else if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Monthly)) {
+                    total += expense.getAmount()*12;
+                }
+            }
+        }
+        return total;
+    }
+
+
     public List<OneTimeExpense> getOneTimeExpenses (Long departmentId){
         List<OneTimeExpense> expenses = oneTimeExpenseRepository.findAll();
         List<OneTimeExpense> response = new ArrayList<>();
@@ -168,6 +223,42 @@ public class DepartmentService {
         return response;
     }
 
+    public Double getMonthlyAmountOneTimeExpenses(Long departmentId, String monthName){
+        List<OneTimeExpense> expenses = oneTimeExpenseRepository.findAll();
+        List<OneTimeExpense> response = new ArrayList<>();
+        Double total = 0.0;
+        for(OneTimeExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId) && expense.getCreatedAt().getYear()==LocalDate.now().getYear()){
+                response.add(expense);
+            }
+        }
+        for(OneTimeExpense expense : response){
+            if(expense.getCreatedAt().getMonth().name().substring(0,3).equals(monthName)){
+                total += expense.getAmount();
+            }
+        }
+        return total;
+    }
+
+    public Double getYearlyAmountOneTimeExpenses(Long departmentId, Integer year){
+        List<OneTimeExpense> expenses = oneTimeExpenseRepository.findAll();
+        List<OneTimeExpense> response = new ArrayList<>();
+        Double total = 0.0;
+        for(OneTimeExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+                response.add(expense);
+            }
+        }
+        for(OneTimeExpense expense : response){
+            if(expense.getCreatedAt().getYear()==year){
+                total += expense.getAmount();
+            }
+        }
+        return total;
+    }
+
+
+
     public List<Budget> getAllBudgets (Long departmentId){
         List<Budget> budgets = budgetRepo.findAll();
         List<Budget> response = new ArrayList<>();
@@ -178,6 +269,7 @@ public class DepartmentService {
         }
         return response;
     }
+
 
     public List<BudgetDTO> getBudgetDTOs(Long departmentId){
         List<Budget> budgets = budgetRepo.findAll();

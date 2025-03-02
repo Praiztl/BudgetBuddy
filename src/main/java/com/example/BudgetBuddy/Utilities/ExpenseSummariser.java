@@ -1,81 +1,79 @@
 package com.example.BudgetBuddy.Utilities;
 
 import com.example.BudgetBuddy.Models.RecurringExpense;
+import com.example.BudgetBuddy.Services.DepartmentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Service
 public class ExpenseSummariser {
 
-    public static List<Map<String, Double>> getMonthlySummary(List<RecurringExpense> expenseList) {
-        Map<String, Double> monthlySummary = new HashMap<>(); // Initialize the map
+    @Autowired
+    private DepartmentService departmentService;
+
+
+    public List<Map<String, Object>> getMonthlySummary(List<RecurringExpense> expenseList, Long departmentId) {
+        List<Map<String, Object>> monthlySummary = new ArrayList<>();
 
         for (RecurringExpense expense : expenseList) {
-            String monthKey = expense.getCreatedAt().getMonth().name().substring(0, 3);
+            Map<String, Object>oneSummary = new HashMap<>();
+            String monthValue = expense.getCreatedAt().getMonth().name().substring(0, 3);
 
-            /*
-            Calculating total value of recurring expense per month, based on the set interval
-             */
-            if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
-                expense.setAmount(expense.getAmount()*4);
-            } else if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)) {
-                expense.setAmount(expense.getAmount()* expense.getCreatedAt().getMonth().length(expense.getCreatedAt().getYear()%4==0));
-            }
-
-            /*
-            Adding the calculated value to the resulting map
-             */
-            monthlySummary.put(monthKey, monthlySummary.getOrDefault(monthKey, 0.0) + expense.getAmount());
+            oneSummary.put("month", monthValue);
+            oneSummary.put("amount", departmentService.getMonthlyAmountOneTimeExpenses(departmentId, monthValue)+departmentService.getMonthlyAmountRecurringExpenses(departmentId, monthValue));
+            monthlySummary.add(oneSummary);
         }
 
-        return List.of(monthlySummary); // Return the summary as a list
+            return monthlySummary;
     }
 
-    public static List<Map<Integer, Double>> getYearlySummary(List<RecurringExpense> expenseList) {
-        Map<Integer, Double> yearlySummary = new HashMap<>(); // Initialize the map
+
+    public List<Map<String, Object>> getYearlySummary(List<RecurringExpense> expenseList, Long departmentId) {
+        List<Map<String, Object>> yearlySummary = new ArrayList<>();
 
         for (RecurringExpense expense : expenseList) {
-            Integer yearKey = expense.getCreatedAt().getYear();
+            Map<String, Object> oneSummary = new HashMap<>();
+            Integer yearValue = expense.getCreatedAt().getYear();
 
-            /*
-            Calculating value of recurring expenses per year, based on set interval
-             */
-            if(expense.getExpenseInterval().equals(RecurringExpense.Interval.Daily)){
-                if(expense.getCreatedAt().getYear()%4==0){
-                    expense.setAmount(expense.getAmount() * 366);
-                } else{
-                    expense.setAmount(expense.getAmount() * 365);
-                }
-            }
-
-            else if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Weekly)){
-                expense.setAmount(expense.getAmount() * 52);
-            }
-
-            else if (expense.getExpenseInterval().equals(RecurringExpense.Interval.Monthly)){
-                expense.setAmount(expense.getAmount() * 12);
-            }
-
-            /*
-            Adding the calculated value to the resulting map
-             */
-            yearlySummary.put(yearKey, yearlySummary.getOrDefault(yearKey, 0.0) + expense.getAmount());
+            oneSummary.put("year", yearValue);
+            oneSummary.put("amount", departmentService.getYearlyAmountOneTimeExpenses(departmentId, yearValue) +departmentService.getYearlyAmountRecurringExpenses(departmentId, yearValue));
+            yearlySummary.add(oneSummary);
         }
 
-        return List.of(yearlySummary); // Return the summary as a list
+        return yearlySummary;
     }
 
-    public static List<Map<String, Double>> currentMonthSummary(List<RecurringExpense> expenseList) {
-        Map<String, Double> monthlySummary = new HashMap<>(); // Initialize the map
+    public Map<String, Object> currentMonthSummary(List<RecurringExpense> expenseList, String monthValue) {
+        if(monthValue==null){
+            monthValue=LocalDate.now().getMonth().name().substring(0,3);
+        }
+        List<Map<String, Object>> monthlySummary = new ArrayList<>();
+        Map<String, Object> summaryItem = new HashMap<>();
 
-        for (RecurringExpense expense : expenseList) {
+        for (RecurringExpense expense : expenseList
+//                .stream()
+//                .sorted(Comparator.comparingDouble(RecurringExpense::getAmount).reversed()) // Sort by amount in descending order
+//                .limit(5) // Take the top 5
+//                .collect(Collectors.toList())
+        ) {
+            Map<String, Double> summaryItemDetail = new HashMap<>();
+
             String monthKey = expense.getCreatedAt().getMonth().name().substring(0, 3);
             int year = expense.getCreatedAt().getYear();
-            if(monthKey.equals(LocalDate.now().getMonth().name().substring(0, 3)) && year == LocalDate.now().getYear()){
-            monthlySummary.put(expense.getName(), monthlySummary.getOrDefault(monthKey, 0.0) + expense.getAmount());
+            String expenseName = expense.getName();
+            Double amount = expense.getAmount();
+
+            if(monthKey.equals(monthValue) && year == LocalDate.now().getYear()){
+                summaryItemDetail.put(expenseName, summaryItemDetail.getOrDefault(expenseName, 0.0) + amount);
             }
+            summaryItem.put(monthKey, summaryItemDetail);
+            monthlySummary.add(summaryItem);
         }
 
-        return List.of(monthlySummary); // Return the summary as a list
+        return summaryItem; // Return the summary as a list
     }
 }

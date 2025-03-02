@@ -21,7 +21,7 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private List<Budget> budgets;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "hod_id")
     private HOD hod;
 

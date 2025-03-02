@@ -33,11 +33,9 @@ public class HOD implements UserDetails {
 
     private boolean enabled;
 
-    @OneToOne(mappedBy = "hod", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    @OneToOne(mappedBy = "hod")
     private Department department;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<HODNotification> notifications;
 
     private Boolean isOtpVerified = false;
 
@@ -47,6 +45,14 @@ public class HOD implements UserDetails {
 
     public enum Role {
         HOD, // HOD role
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     @Override

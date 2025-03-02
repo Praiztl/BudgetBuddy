@@ -1,16 +1,11 @@
 package com.example.BudgetBuddy.Controllers;
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.DTO.DepartmentDTO;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.*;
-import com.example.BudgetBuddy.Services.BudgetService;
-import com.example.BudgetBuddy.Services.DepartmentService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.BudgetBuddy.Services.*;
 import lombok.RequiredArgsConstructor;
-import com.example.BudgetBuddy.Services.OneTimeExpenseService;
-import com.example.BudgetBuddy.Services.RecurringExpenseService;
 import com.example.BudgetBuddy.Utilities.CsvUtil;
 import com.example.BudgetBuddy.Utilities.ExpenseSummariser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +13,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/departments")
@@ -47,7 +42,13 @@ public class DepartmentController {
     private RecurringExpenseService recurringExpenseService;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private CsvUtil csvUtil;
+
+    @Autowired
+    private ExpenseSummariser expenseSummariser;
 
     /**
      * Get all departments (Accessible by Anyone)
@@ -110,15 +111,13 @@ public class DepartmentController {
             return ResponseEntity.status(403).body("Access denied: Only admins can delete departments.");
         }
 
-//    @PutMapping(path = "/{id}/update")
-//    private Department updateDepartment(@PathVariable(name = "id")Integer id, DepartmentDTO updates){
-//        return service.updateDepartment(id, updates);
-//    }
-//
-    @DeleteMapping(path = "/{id}/delete")
-    public ResponseEntity<Department> deleteDepartment(@PathVariable(name = "id")Long id){
         return departmentService.deleteDepartment(id);
     }
+
+//    @DeleteMapping(path = "/{id}/delete")
+//    public ResponseEntity<Department> deleteDepartment(@PathVariable(name = "id")Long id){
+//        return departmentService.deleteDepartment(id);
+//    }
 
 
     /*
@@ -145,28 +144,92 @@ public class DepartmentController {
         return new ResponseEntity<>(departmentService.getAllBudgets(id), HttpStatus.OK);
     }
 
+    /*
+    Getting notifications for this department
+     */
+    @GetMapping(path = "/{id}/notifications")
+    public ResponseEntity<List<Notification>> getNotificationsForHOD(@PathVariable(name = "id") Long id){
+        return new ResponseEntity<>(notificationService.getNotificationsByDepartment(departmentService.getDepartmentById(id).getBody().getName()), HttpStatus.OK);
+    }
+
 
 
     /*
         Department Dashboard endpoint
      */
-    @GetMapping(path = "/{id}/dashboard")
-    public ResponseEntity<HODDashboardCounts> getDashboard(@PathVariable(name = "id")Long id){
-        HODDashboardCounts dashboard = new HODDashboardCounts(
-                budgetService.getAllBudgets().size(),
-                departmentService.getApprovedBudgets(id).size(),
-                departmentService.getPendingBudgets(id).size(),
-                departmentService.getRejectedBudgets(id).size(),
-                recurringExpenseService.getRecurringExpenses().size(),
-                ExpenseSummariser.currentMonthSummary(departmentService.getRecurringExpenses(id)),
-                new HODExpenseChart(
-                        ExpenseSummariser.getMonthlySummary(departmentService.getRecurringExpenses(id)),
-                        ExpenseSummariser.getYearlySummary(departmentService.getRecurringExpenses(id))
-                ),
-                departmentService.getBudgetDTOs(id)
-        );
+//    @GetMapping(path = "/{id}/dashboard")
+//    public ResponseEntity<HODDashboard> getDashboard(@PathVariable(name = "id")Long id){
+//        HODDashboard dashboard = new HODDashboard(
+//                budgetService.getAllBudgets().size(),
+//                departmentService.getApprovedBudgets(id).size(),
+//                departmentService.getPendingBudgets(id).size(),
+//                departmentService.getRejectedBudgets(id).size(),
+//                recurringExpenseService.getRecurringExpenses().size(),
+//                ExpenseSummariser.currentMonthSummary(departmentService.getRecurringExpenses(id)),
+//                new HODExpenseChart(
+//                        ExpenseSummariser.getMonthlySummary(departmentService.getRecurringExpenses(id)),
+//                        ExpenseSummariser.getYearlySummary(departmentService.getRecurringExpenses(id))
+//                ),
+//                departmentService.getBudgetDTOs(id)
+//        );
+//
+//        return new ResponseEntity<>(dashboard, HttpStatus.OK);
+//    }
 
-        return new ResponseEntity<>(dashboard, HttpStatus.OK);
+    /*
+    Find alternative dashboard endpoints in HOD controller
+     */
+
+    @GetMapping(path = "/{id}/dashboard/total-budget-count")
+    public ResponseEntity<Integer> getBudgetCounts(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getAllBudgets(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping(path = "{id}/dashboard/approved-budget-count")
+    public ResponseEntity<Integer> getApprovedBudgetCount(@PathVariable(name = "id") Long departmentId) {
+        Integer response = departmentService.getApprovedBudgets(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard/pending-budget-count")
+    public ResponseEntity<Integer>getPendingBudgetCount(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getPendingBudgets(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "dashboard/rejected-budget-count")
+    public ResponseEntity<Integer> getRejectedBudgetCount(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getRejectedBudgets(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard/total-recurring-expense-count")
+    public ResponseEntity<Integer> getTotalRecurringExpenseCount(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getRecurringExpenses(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "{id}/dashboard/expense-chart")
+    public ResponseEntity<HODExpenseChart> getHODExpenseChart(@PathVariable(name = "id") Long departmentId){
+        HODExpenseChart expenseChart = new HODExpenseChart(
+                expenseSummariser.getMonthlySummary(departmentService.getRecurringExpenses(departmentId), departmentId),
+                expenseSummariser.getYearlySummary(departmentService.getRecurringExpenses(departmentId), departmentId)
+        );
+        return new ResponseEntity<>(expenseChart, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/dashboard/expense-summary")
+    public ResponseEntity <Map<String, Object>> getExpenseSummary(@PathVariable(name = "id") Long departmentId, @RequestParam(name = "month", required = false) String monthValue){
+        Map<String, Object> response =  expenseSummariser.currentMonthSummary(departmentService.getRecurringExpenses(departmentId),monthValue);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/dashboard/budget-list")
+    public ResponseEntity<List<BudgetDTO>> getBudgetList(@PathVariable(name = "id")Long departmentId){
+        List<BudgetDTO> response = departmentService.getBudgetDTOs(departmentId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
 }

@@ -64,7 +64,7 @@ public class DTOMapperService {
 
         List<String> recurringExpenses = new ArrayList<>();
         for(RecurringExpense expense: budget.getRecurringExpenses()){
-            oneTimeExpenses.add(expense.toString());
+            recurringExpenses.add(expense.toString());
         }
 
         return BudgetDTO.builder()

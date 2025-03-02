@@ -3,12 +3,11 @@ package com.example.BudgetBuddy.Services;
 import com.example.BudgetBuddy.DTO.UpdateBudgetDTO;
 import com.example.BudgetBuddy.Exceptions.BudgetNotFoundException;
 import com.example.BudgetBuddy.Models.Budget;
-import com.example.BudgetBuddy.Models.HODNotification;
+import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Repositories.BudgetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,10 +16,15 @@ public class BudgetService {
     private BudgetRepository budgetRepo;
 
     @Autowired
-    private HODNotificationService hodNotificationService;
+    private NotificationService notificationService;
 
     public Budget createBudget(Budget newBudget){
-        return budgetRepo.save(newBudget);
+        Budget savedBudget =  budgetRepo.save(newBudget);
+        notificationService.createNotification(new Notification(
+                "Budget Submission",
+                "New budget %s submitted for approval".formatted(savedBudget.getName())
+                ));
+        return savedBudget;
     }
 
     public List<Budget> getAllBudgets(){
@@ -47,16 +51,24 @@ public class BudgetService {
     public Budget approveBudget(Long id){
         Budget budget = budgetRepo.findById(id).orElseThrow(() -> new RuntimeException("Budget with this ID does not exist."));
         budget.setStatus(Budget.Status.Approved);
-        budget = budgetRepo.save(budget);
-        hodNotificationService.createNotification(new HODNotification("Status Updated", "The budget %s's status has been updated to %s.".formatted(budget.getName(), budget.getStatus()), budget.getDepartment().getHod()));
-        return budget;
+        Budget savedBudget = budgetRepo.save(budget);
+        notificationService.createNotification(new Notification(
+                "Budget Approval",
+                "Budget %s has been approved".formatted(savedBudget.getName()),
+                savedBudget.getDepartment().getName()
+        ));
+        return savedBudget;
     }
 
     public Budget rejectBudget(Long id){
         Budget budget = budgetRepo.findById(id).orElseThrow(() -> new RuntimeException("Budget with this ID does not exist."));
         budget.setStatus(Budget.Status.Rejected);
-        budget = budgetRepo.save(budget);
-        hodNotificationService.createNotification(new HODNotification("Status Updated", "The budget %s's status has been updated to %s.".formatted(budget.getName(), budget.getStatus()), budget.getDepartment().getHod()));
+        Budget savedBudget = budgetRepo.save(budget);
+        notificationService.createNotification(new Notification(
+                "Budget Rejection",
+                "Budget %s has been rejected".formatted(savedBudget.getName()),
+                savedBudget.getDepartment().getName()
+        ));
         return budget;
     }
 

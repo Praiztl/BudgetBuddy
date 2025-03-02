@@ -64,7 +64,5 @@ public class HODService {
         return new ResponseEntity<>(userHOD, HttpStatus.FOUND);
     }
 
-/*
-Endpoints to access budgets relevant to that HOD
- */
+
 }

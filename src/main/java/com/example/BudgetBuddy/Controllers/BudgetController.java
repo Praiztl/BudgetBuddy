@@ -91,6 +91,19 @@ public class BudgetController {
         return "Budget %s deleted successfully.".formatted(id);
     }
 
+    // Endpoint to approve budget
+    @PutMapping(path = "/{id}/approve")
+    public ResponseEntity<Budget> approveBudget(@PathVariable(name = "id") Long id){
+        Budget approved = service.approveBudget(id);
+        return new ResponseEntity<>(approved, HttpStatus.ACCEPTED);
+    }
+
+    //Endpoint to reject budget
+    @PutMapping(path = "/{id}/reject")
+    public ResponseEntity<Budget> reject(@PathVariable(name = "id") Long id){
+        Budget approved = service.rejectBudget(id);
+        return new ResponseEntity<>(approved, HttpStatus.ACCEPTED);
+    }
 
     /*
     Endpoints for One Time Expenses

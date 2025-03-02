@@ -27,6 +27,10 @@ public class RecurringExpense {
     @Enumerated(EnumType.STRING)
     private Interval expenseInterval = Interval.Weekly;
 
+    @Enumerated(EnumType.STRING)
+    private Status approvalStatus;
+
+
     public Interval getExpenseInterval() {
         return expenseInterval;
     }
@@ -84,6 +88,7 @@ public class RecurringExpense {
         this.assignedTo = assignedTo;
         this.expenseInterval = interval;
         this.createdAt = LocalDate.now();
+        this.approvalStatus = Status.Pending;
     }
 
     @Override
@@ -96,5 +101,11 @@ public class RecurringExpense {
         Weekly,
         Monthly,
         Yearly
+    }
+
+    public enum Status{
+        Pending,
+        Approved,
+        Rejected
     }
 }

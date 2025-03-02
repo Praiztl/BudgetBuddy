@@ -5,7 +5,7 @@ import com.example.BudgetBuddy.DTO.BudgetDTO;
 import java.util.List;
 import java.util.Map;
 
-public class HODDashboardCounts {
+public class HODDashboard {
     private Integer totalBudgetCount;
     private Integer approvedBudgetCount;
     private Integer pendingBudgetCount;
@@ -18,7 +18,7 @@ public class HODDashboardCounts {
 
     private List<BudgetDTO> budgetList;
 
-    public HODDashboardCounts(Integer totalBudgetCount, Integer approvedBudgetCount, Integer pendingBudgetCount, Integer rejectedBudgetCount, Integer recurrentExpenseCount, List<Map<String, Double>> expenseSummary, HODExpenseChart expenseChart, List<BudgetDTO> budgetList) {
+    public HODDashboard(Integer totalBudgetCount, Integer approvedBudgetCount, Integer pendingBudgetCount, Integer rejectedBudgetCount, Integer recurrentExpenseCount, List<Map<String, Double>> expenseSummary, HODExpenseChart expenseChart, List<BudgetDTO> budgetList) {
         this.totalBudgetCount = totalBudgetCount;
         this.approvedBudgetCount = approvedBudgetCount;
         this.pendingBudgetCount = pendingBudgetCount;
@@ -30,7 +30,7 @@ public class HODDashboardCounts {
         this.budgetList = budgetList;
     }
 
-    public HODDashboardCounts() {
+    public HODDashboard() {
     }
 //    private List<>
 }
