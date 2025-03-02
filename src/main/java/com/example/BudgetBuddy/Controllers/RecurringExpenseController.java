@@ -1,10 +1,13 @@
 package com.example.BudgetBuddy.Controllers;
 
+import com.example.BudgetBuddy.DTO.RecExpenseDTO;
 import com.example.BudgetBuddy.Models.RecurringExpense;
+import com.example.BudgetBuddy.Services.DTOMapperService;
 import com.example.BudgetBuddy.Services.RecurringExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -12,6 +15,9 @@ import java.util.List;
 public class RecurringExpenseController {
     @Autowired
     private RecurringExpenseService service;
+
+    @Autowired
+    private DTOMapperService dtoMapperService;
 
     @PostMapping(path = "/create")
     public RecurringExpense createRecurringExpense(RecurringExpense expense, Long budgetId){
@@ -22,8 +28,14 @@ public class RecurringExpenseController {
     Endpoint to retrieve all recurring expenses
      */
     @GetMapping
-    public List<RecurringExpense> getRecurringExpenses(){
-        return service.getRecurringExpenses();
+    public List<RecExpenseDTO> getRecurringExpenses(){
+        List<RecurringExpense> result =  service.getRecurringExpenses();
+        List<RecExpenseDTO> response = new ArrayList<>();
+
+        for(RecurringExpense expense : result){
+            response.add(dtoMapperService.convertToRecExpenseDTO(expense));
+        }
+        return response;
     }
 
     /*

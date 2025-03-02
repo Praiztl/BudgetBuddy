@@ -12,6 +12,8 @@ import org.checkerframework.checker.units.qual.A;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecExpenseDTO {
+    private Integer id;
+
     private String name;
 
     private Double amount;

@@ -1,6 +1,7 @@
 package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.BudgetDTO;
+import com.example.BudgetBuddy.DTO.RecExpenseDTO;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
 import com.example.BudgetBuddy.Utilities.AdminExpenseCalculator;
@@ -172,8 +173,9 @@ public class AdminController {
     }
 
     @GetMapping(path = "/dashboard/get-total-recurring-expense-list")
-    public ResponseEntity<List<RecurringExpense>> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
+    public ResponseEntity<List<RecExpenseDTO>> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
         List<RecurringExpense> totalRecExpenseList = new ArrayList<>();
+        List<RecExpenseDTO> response = new ArrayList<>();
 
         if(status == null) {
             totalRecExpenseList = recurringExpenseService.getRecurringExpenses();
@@ -186,7 +188,10 @@ public class AdminController {
             totalRecExpenseList = recurringExpenseService.getRejectedExpenses();
         }
 
-        return new ResponseEntity<>(totalRecExpenseList, HttpStatus.OK);
+        for(RecurringExpense expense : totalRecExpenseList){
+            response.add(dtoMapperService.convertToRecExpenseDTO(expense));
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 public class BudgetDTO {
+    private Long id;
     private String name;
     private LocalDate date;
     private Double amount;
@@ -20,7 +21,8 @@ public class BudgetDTO {
     public BudgetDTO() {
     }
 
-    public BudgetDTO(String name, LocalDate date, Double amount, List<String> expenses, List<String> recurringExpenses) {
+    public BudgetDTO(Long id, String name, LocalDate date, Double amount, List<String> expenses, List<String> recurringExpenses) {
+        this.id = id;
         this.name = name;
         this.date = date;
         this.amount = amount;

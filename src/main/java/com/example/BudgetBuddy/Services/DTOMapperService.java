@@ -68,6 +68,7 @@ public class DTOMapperService {
         }
 
         return BudgetDTO.builder()
+                .id(budget.getId())
                 .name(budget.getName())
                 .date(budget.getCreatedAt())
                 .amount(budget.getAmount())
@@ -78,6 +79,7 @@ public class DTOMapperService {
 
     public OneTimeExpenseDTO convertToExpenseDTO(OneTimeExpense expense){
         return OneTimeExpenseDTO.builder()
+                .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
                 .assignedTo(expense.getAssignedTo().getName())
@@ -87,11 +89,25 @@ public class DTOMapperService {
 
     public RecExpenseDTO convertToRecExpenseDTO(RecurringExpense expense){
         return RecExpenseDTO.builder()
+                .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
                 .assignedTo(expense.getAssignedTo().getName())
                 .expenseInterval(expense.getExpenseInterval())
                 .approvalStatus(expense.getApprovalStatus())
+                .build();
+    }
+
+    public GetDepartmentDTO convertToGetDepartmentDTO(Department department){
+        List<BudgetDTO> budgetDTOS = new ArrayList<>();
+        for(Budget budget: department.getBudgets()){
+            budgetDTOS.add(convertToBudgetDTO(budget));
+        }
+        return GetDepartmentDTO.builder()
+                .id(department.getId())
+                .name(department.getName())
+                .budgets(budgetDTOS)
+                .hod(department.getHod())
                 .build();
     }
 }

@@ -10,6 +10,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OneTimeExpenseDTO {
+    private Integer id;
+
     private String name;
 
     private Double amount;

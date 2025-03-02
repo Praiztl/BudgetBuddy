@@ -2,6 +2,7 @@ package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.DTO.DepartmentDTO;
+import com.example.BudgetBuddy.DTO.GetDepartmentDTO;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
@@ -50,12 +51,20 @@ public class DepartmentController {
     @Autowired
     private ExpenseSummariser expenseSummariser;
 
+    @Autowired
+    private DTOMapperService dtoMapperService;
+
     /**
      * Get all departments (Accessible by Anyone)
      */
     @GetMapping
-    public ResponseEntity<List<Department>> getAllDepartments() {
-        return departmentService.getAllDepartments();
+    public ResponseEntity<List<GetDepartmentDTO>> getAllDepartments() {
+        List<Department> departments = departmentService.getAllDepartments().getBody();
+        List<GetDepartmentDTO> response = new ArrayList<>();
+        for(Department department: departments){
+            response.add(dtoMapperService.convertToGetDepartmentDTO(department));
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
