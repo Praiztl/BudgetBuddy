@@ -62,8 +62,6 @@ public class AuthenticationController {
         }
     }
 
-
-
     @Autowired
     private final PasswordService passwordService;
     /**
@@ -82,6 +80,18 @@ public class AuthenticationController {
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
         passwordService.resetPassword(request.getEmail(), request.getOtp(), request.getNewPassword());
         return ResponseEntity.ok("Password reset successful.");
+    }
+
+    /**
+     * Handles resend OTP for Login
+     */
+    @PostMapping("/resend-otp")
+    public ResponseEntity<Map<String, String>> resendOTP(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email is required"));
+        }
+        return authenticationService.resendOTP(email);
     }
 
 }

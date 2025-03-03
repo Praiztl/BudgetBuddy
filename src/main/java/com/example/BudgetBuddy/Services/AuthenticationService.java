@@ -247,4 +247,27 @@ public class AuthenticationService {
 
         emailService.sendOtpEmail(email, otp);
     }
+
+    public ResponseEntity<Map<String, String>> resendOTP(String email) {
+        Optional<Admin> admin = adminRepository.findByEmail(email);
+        Optional<HOD> hod = hodRepository.findByEmail(email);
+
+        if (admin.isEmpty() && hod.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "User not found"));
+        }
+
+        // Ensure the OTP can only be resent if the user is not verified
+        if (admin.isPresent() && admin.get().getIsOtpVerified() ||
+                hod.isPresent() && hod.get().getIsOtpVerified()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "User already verified"));
+        }
+
+        clearOTP(email);
+        generateAndSendOTP(email);
+
+        return ResponseEntity.ok(Map.of("message", "New OTP sent successfully."));
+    }
+
 }
