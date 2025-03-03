@@ -46,6 +46,9 @@ public class AdminController {
     @Autowired
     private DTOMapperService dtoMapperService;
 
+    @Autowired
+    private AdminService adminService;
+
     @GetMapping(path = "/notifications")
     public ResponseEntity<List<Notification>> getNotificationsForaAdmin(){
         return new ResponseEntity<>(notificationService.getNotificationsForAdmin(), HttpStatus.OK);
@@ -62,6 +65,11 @@ public class AdminController {
         }
 
         return new ResponseEntity<>(departmentCounts, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/dashboard/get-budget-statistics")
+    public ResponseEntity<Map<String, Integer>> getBudgetStatistics(){
+        return new ResponseEntity<>(adminService.getBudgetStatistics(), HttpStatus.OK);
     }
 
     @GetMapping(path = "/dashboard/get-total-budget-count")
