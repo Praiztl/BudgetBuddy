@@ -3,6 +3,7 @@ package com.example.BudgetBuddy.Services;
 import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Exceptions.AuthenticationException;
 import com.example.BudgetBuddy.Exceptions.UserNotFoundException;
+import com.example.BudgetBuddy.Models.Department;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.GrantedAuthority;
 import com.example.BudgetBuddy.Models.Admin;
@@ -82,8 +83,14 @@ public class AuthenticationService {
                 .orElseThrow(() -> new RuntimeException("Department not found")));
         hod.setRole(HOD.Role.HOD);
 
+
         // Save HOD to repository
         HOD savedHOD = hodRepository.save(hod);
+
+        //Add HOD to department sent in request
+        Department department = departmentRepository.findById(dto.getDepartmentId()).orElseThrow(() -> new RuntimeException("No department found"));
+        department.setHod(savedHOD);
+        departmentRepository.save(department);
 
         // Generate and send OTP
         generateAndSendOTP(savedHOD.getEmail());
@@ -107,9 +114,11 @@ public class AuthenticationService {
         boolean isAdmin = false;
 
 
+        Department departmentId = null;
         if (hodOptional.isPresent()) {
             HOD hod = hodOptional.get();
             isVerified = hod.getIsOtpVerified();
+            departmentId = hod.getDepartment();
         } else if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
             isVerified = admin.getIsOtpVerified();
@@ -139,6 +148,7 @@ public class AuthenticationService {
             response.put("token", jwtToken);
             response.put("roles", roles);
             response.put("isAdmin", isAdmin);
+            response.put("department_id", departmentId != null ? departmentId.getId() : null);
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {

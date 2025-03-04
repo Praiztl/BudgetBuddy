@@ -8,17 +8,16 @@ import com.example.BudgetBuddy.Utilities.AdminExpenseCalculator;
 import com.example.BudgetBuddy.Utilities.ExpenseSummariser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(path = "/admin")
 public class AdminController {
@@ -68,12 +67,12 @@ public class AdminController {
     }
 
     @GetMapping(path = "/dashboard/get-budget-statistics")
-    public ResponseEntity<Map<String, Integer>> getBudgetStatistics(){
-        return new ResponseEntity<>(adminService.getBudgetStatistics(), HttpStatus.OK);
+    public ResponseEntity<?> getBudgetStatistics(){         //Map<String, Integer>
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(adminService.getBudgetStatistics());
     }
 
     @GetMapping(path = "/dashboard/get-total-budget-count")
-    public ResponseEntity<Integer> getTotalBudgetCount(@RequestParam(name = "status", required = false)Budget.Status status){
+    public Integer getTotalBudgetCount(@RequestParam(name = "status", required = false)Budget.Status status){
         Integer count = 0;
         if(status==null){
             count = budgetService.getAllBudgets().size();
@@ -86,11 +85,11 @@ public class AdminController {
             count = budgetService.getRejectedBudgets().size();
         }
 
-        return new ResponseEntity<>(count, HttpStatus.OK);
+       return count;
     }
 
     @GetMapping(path = "/dashboard/get-recurring-expense-count")
-    public ResponseEntity<Map<String, Integer>> getRecurringExpenseCount(){
+    public Map<String, Integer> getRecurringExpenseCount(){
         List<Department> departments = departmentService.getAllDepartments().getBody();
         Map<String, Integer> departmentCounts = new HashMap<>();
         assert departments != null;
@@ -99,35 +98,35 @@ public class AdminController {
             departmentCounts.put(department.getName(), recurringExpenseCount);
         }
 
-        return new ResponseEntity<>(departmentCounts, HttpStatus.OK);
+        return departmentCounts;
     }
 
     @GetMapping(path = "/dashboard/get-total-recurring-expense-count")
-    public ResponseEntity<Integer> getTotalRecurringExpenseCount(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
+    public Integer getTotalRecurringExpenseCount(@RequestParam(name = "status", required = false) RecurringExpense.Status status) {
         Integer count = 0;
-        if(status == null) {
+        if (status == null) {
             recurringExpenseService.getRecurringExpenses().size();
         }
-        if(status.equals(RecurringExpense.Status.Approved)){
+        if (status.equals(RecurringExpense.Status.Approved)) {
             count = recurringExpenseService.getApprovedExpenses().size();
-        } else if (status.equals(RecurringExpense.Status.Pending)){
+        } else if (status.equals(RecurringExpense.Status.Pending)) {
             count = recurringExpenseService.getPendingExpenses().size();
         } else if (status.equals(RecurringExpense.Status.Rejected)) {
             count = recurringExpenseService.getRejectedExpenses().size();
         }
 
-        return new ResponseEntity<>(count, HttpStatus.OK);
+        return count;
     }
 
 
     @GetMapping(path = "/dashboard/get-department-count")
-    public ResponseEntity<Integer> getDepartmentCount(){
+    public Integer getDepartmentCount(){
         Integer departmentCount = departmentService.getAllDepartments().getBody().size();
-        return new ResponseEntity<>(departmentCount, HttpStatus.OK);
+        return departmentCount;
     }
 
     @GetMapping(path = "/dashboard/get-expense-chart")
-    public ResponseEntity<HODExpenseChart> getExpenseChart(){
+    public HODExpenseChart getExpenseChart(){
         List<Expense> expenseList = new ArrayList<>();
         for(OneTimeExpense expense: oneTimeExpenseService.getOneTimeExpenses()){
             expenseList.add(expense);
@@ -139,18 +138,18 @@ public class AdminController {
                 expenseSummariser.getAdminMonthlySummary(expenseList),
                 expenseSummariser.getAdminYearlySummary(expenseList)
         );
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @GetMapping(path = "/dashboard/get-yearly-budget-total")
-    public ResponseEntity<Map<Integer, Double>> getYearlyBudgetTotal(){
+    public Map<Integer, Double> getYearlyBudgetTotal(){
         List<Budget> budgetList = budgetService.getApprovedBudgets();
         Map<Integer, Double> response = expenseSummariser.getAdminYearlyBudgetTotal(budgetList);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
     @GetMapping(path = "/dashboard/get-total-budget-list")
-    public ResponseEntity<List<BudgetDTO>> getTotalBudgetList(@RequestParam(name = "status", required = false)Budget.Status status){
+    public List<BudgetDTO> getTotalBudgetList(@RequestParam(name = "status", required = false)Budget.Status status){
         List<BudgetDTO> totalBudgetDTOList = new ArrayList<>();
         List<Budget> totalBudgetList = new ArrayList<>();
 
@@ -160,28 +159,28 @@ public class AdminController {
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }
-        else if(status.equals(RecurringExpense.Status.Approved)){
+        else if(status.equals(Budget.Status.Approved)){
             totalBudgetList = budgetService.getApprovedBudgets();
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
-        } else if (status.equals(RecurringExpense.Status.Pending)){
+        } else if (status.equals(Budget.Status.Pending)){
             totalBudgetList = budgetService.getPendingBudgets();
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
-        } else if (status.equals(RecurringExpense.Status.Rejected)) {
+        } else if (status.equals(Budget.Status.Rejected)) {
             totalBudgetList = budgetService.getRejectedBudgets();
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }
 
-        return new ResponseEntity<>(totalBudgetDTOList, HttpStatus.OK);
+        return totalBudgetDTOList;
     }
 
     @GetMapping(path = "/dashboard/get-total-recurring-expense-list")
-    public ResponseEntity<List<RecExpenseDTO>> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
+    public List<RecExpenseDTO> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
         List<RecurringExpense> totalRecExpenseList = new ArrayList<>();
         List<RecExpenseDTO> response = new ArrayList<>();
 
@@ -199,7 +198,7 @@ public class AdminController {
         for(RecurringExpense expense : totalRecExpenseList){
             response.add(dtoMapperService.convertToRecExpenseDTO(expense));
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response;
     }
 
 }

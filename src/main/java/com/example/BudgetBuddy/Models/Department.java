@@ -1,6 +1,7 @@
 package com.example.BudgetBuddy.Models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -21,9 +22,9 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private List<Budget> budgets;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "hod_id")
+    @OneToOne(mappedBy = "department")
     private HOD hod;
+
 
     public Long getId() {
         return id;
@@ -52,10 +53,11 @@ public class Department {
     public Department(String departmentName) {
     }
 
-    public Department(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public Department(Long departmentId, String departmentName) {
+        this.id = departmentId;
+        this.name= departmentName;
     }
+
 
     public Department() {
     }

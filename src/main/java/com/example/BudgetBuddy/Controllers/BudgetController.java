@@ -87,11 +87,11 @@ public class BudgetController {
     }
 
     @PutMapping(path = "/{id}/update")
-    public ResponseEntity<Budget> updateBudget(@PathVariable(name = "id")Long id, @RequestBody UpdateBudgetDTO updates){
+    public Budget updateBudget(@PathVariable(name = "id")Long id, @RequestBody UpdateBudgetDTO updates){
         if(updates == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return null;
         }
-        return new ResponseEntity<>(service.updateBudget(id, updates), HttpStatus.ACCEPTED);
+        return service.updateBudget(id, updates);
     }
 
     @DeleteMapping(path = "/{id}/delete")
@@ -102,16 +102,14 @@ public class BudgetController {
 
     // Endpoint to approve budget
     @PutMapping(path = "/{id}/approve")
-    public ResponseEntity<Budget> approveBudget(@PathVariable(name = "id") Long id){
-        Budget approved = service.approveBudget(id);
-        return new ResponseEntity<>(approved, HttpStatus.ACCEPTED);
+    public Budget approveBudget(@PathVariable(name = "id") Long id){
+        return service.approveBudget(id);
     }
 
     //Endpoint to reject budget
     @PutMapping(path = "/{id}/reject")
-    public ResponseEntity<Budget> reject(@PathVariable(name = "id") Long id){
-        Budget approved = service.rejectBudget(id);
-        return new ResponseEntity<>(approved, HttpStatus.ACCEPTED);
+    public Budget reject(@PathVariable(name = "id") Long id){
+        return service.rejectBudget(id);
     }
 
     /*
@@ -119,13 +117,13 @@ public class BudgetController {
      */
 
     @PostMapping(path = "/{id}/expenses/create")
-    public ResponseEntity<OneTimeExpense> createOneTimeExpense(@PathVariable(name = "id") Long id, @RequestBody OneTimeExpense expense){
-        return oneTimeExpenseService.createOneTimeExpense(expense, id);
+    public OneTimeExpense createOneTimeExpense(@PathVariable(name = "id") Long id, @RequestBody OneTimeExpense expense){
+        return oneTimeExpenseService.createOneTimeExpense(expense, id).getBody();
     }
 
     @GetMapping(path = "/{id}/expenses")
-    public ResponseEntity<List<OneTimeExpense>> getExpensesForBudget(@PathVariable(name = "id") Long id){
-        return oneTimeExpenseService.getForBudget(id);
+    public List<OneTimeExpense> getExpensesForBudget(@PathVariable(name = "id") Long id){
+        return oneTimeExpenseService.getForBudget(id).getBody();
     }
 
 

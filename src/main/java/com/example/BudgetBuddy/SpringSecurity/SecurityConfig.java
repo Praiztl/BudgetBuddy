@@ -32,11 +32,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS properly
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Ensure proper CORS settings
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/departments").permitAll() // Allow anyone to GET departments
-                        .requestMatchers(HttpMethod.POST, "/departments").hasRole("ADMIN") // Restrict creating departments to Admins
-                        .requestMatchers("/auth/**", "/api/v1/password/*").permitAll() // Public authentication endpoints
+                        .requestMatchers(HttpMethod.GET, "/departments", "/departments/**").permitAll() // Allow GET requests to departments
+                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**").hasRole("ADMIN") // Only ADMIN can create departments
+                        .requestMatchers("/auth/**", "/api/v1/password/*").permitAll() // Allow authentication routes
+                        .requestMatchers(HttpMethod.GET, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -44,6 +49,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -67,7 +73,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Allow specific frontend origins
-        config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000")); //http://localhost:3000
         config.setAllowCredentials(true); // Required if using authentication
 
         // Allow all standard headers and methods
