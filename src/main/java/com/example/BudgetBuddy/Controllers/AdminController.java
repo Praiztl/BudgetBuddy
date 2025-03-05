@@ -105,7 +105,7 @@ public class AdminController {
     public Integer getTotalRecurringExpenseCount(@RequestParam(name = "status", required = false) RecurringExpense.Status status) {
         Integer count = 0;
         if (status == null) {
-            recurringExpenseService.getRecurringExpenses().size();
+            count = recurringExpenseService.getRecurringExpenses().size();
         }
         else if (status.equals(RecurringExpense.Status.Approved)) {
             count = recurringExpenseService.getApprovedExpenses().size();
