@@ -72,14 +72,14 @@ public class DepartmentController {
      */
     @PostMapping("/create")
     public ResponseEntity<?> createDepartments(@RequestBody DepartmentDTO departmentsDTO) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
-
-        if (!isAdmin) {
-            return ResponseEntity.status(403).body("Access denied: Only admins can create departments.");
-        }
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        boolean isAdmin = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+//
+//        if (!isAdmin) {
+//            return ResponseEntity.status(403).body("Access denied: Only admins can create departments.");
+//        }
 
         if (departmentsDTO.getDepartments() == null || departmentsDTO.getDepartments().isEmpty()) {
             return ResponseEntity.badRequest().body("Departments list cannot be empty.");
