@@ -17,5 +17,5 @@ public class GetDepartmentDTO {
 
     private List<BudgetDTO> budgets;
 
-    private HOD hod;
+    private Long hod;
 }
