@@ -34,11 +34,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Ensure proper CORS settings
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/departments", "/departments/**").permitAll() // Allow GET requests to departments
-                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**").permitAll() // Only ADMIN can create departments
+//                        .requestMatchers(HttpMethod.GET, "/departments", "/departments/**").permitAll() // Allow GET requests to departments
+//                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**").permitAll() // Only ADMIN can create departments
                         .requestMatchers("/auth/**", "/api/v1/password/*").permitAll() // Allow authentication routes
-                        .requestMatchers(HttpMethod.GET, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/departments", "/departments/**", "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**", "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
