@@ -35,13 +35,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Ensure proper CORS settings
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/departments", "/departments/**").permitAll() // Allow GET requests to departments
-                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**").hasRole("ADMIN") // Only ADMIN can create departments
+                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**").permitAll() // Only ADMIN can create departments
                         .requestMatchers("/auth/**", "/api/v1/password/*").permitAll() // Allow authentication routes
                         .requestMatchers(HttpMethod.GET, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
