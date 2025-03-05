@@ -68,7 +68,7 @@ public class AdminController {
 
     @GetMapping(path = "/dashboard/get-budget-statistics")
     public ResponseEntity<?> getBudgetStatistics(){         //Map<String, Integer>
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(adminService.getBudgetStatistics());
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON ).body(adminService.getBudgetStatistics());
     }
 
     @GetMapping(path = "/dashboard/get-total-budget-count")
@@ -107,7 +107,7 @@ public class AdminController {
         if (status == null) {
             recurringExpenseService.getRecurringExpenses().size();
         }
-        if (status.equals(RecurringExpense.Status.Approved)) {
+        else if (status.equals(RecurringExpense.Status.Approved)) {
             count = recurringExpenseService.getApprovedExpenses().size();
         } else if (status.equals(RecurringExpense.Status.Pending)) {
             count = recurringExpenseService.getPendingExpenses().size();

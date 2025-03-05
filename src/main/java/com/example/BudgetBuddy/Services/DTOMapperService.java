@@ -107,7 +107,7 @@ public class DTOMapperService {
                 .id(department.getId())
                 .name(department.getName())
                 .budgets(budgetDTOS)
-                .hod(department.getHod().getId())
+//                .hod(department.getHod().getId())
                 .build();
     }
 }
