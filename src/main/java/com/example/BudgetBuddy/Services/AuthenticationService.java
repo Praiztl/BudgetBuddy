@@ -93,7 +93,7 @@ public class AuthenticationService {
         departmentRepository.save(department);
 
         // Generate and send OTP
-        generateAndSendOTP(savedHOD.getEmail());
+//        generateAndSendOTP(savedHOD.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "HOD registered successfully. OTP sent to email."));
