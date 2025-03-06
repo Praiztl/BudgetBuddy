@@ -19,10 +19,10 @@ public class Department {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "department")
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Budget> budgets;
 
-    @OneToOne(mappedBy = "department")
+    @OneToOne(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private HOD hod;
 
 

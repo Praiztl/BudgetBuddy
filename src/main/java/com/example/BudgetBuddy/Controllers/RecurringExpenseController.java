@@ -52,4 +52,14 @@ public class RecurringExpenseController {
         return "Recurring expense %s deleted.".formatted(id);
     }
 
+    @PutMapping(path = "/{id}/approve")
+    public RecExpenseDTO approveExpense(Integer expenseId){
+        return dtoMapperService.convertToRecExpenseDTO(service.approveExpense(expenseId));
+    }
+
+    @PutMapping(path = "/{id}/reject")
+    public RecExpenseDTO rejectExpense(Integer expenseId){
+        return dtoMapperService.convertToRecExpenseDTO(service.rejectExpense(expenseId));
+    }
+
 }

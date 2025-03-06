@@ -24,10 +24,10 @@ public class Budget {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OneTimeExpense> expenses;
 
-    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecurringExpense> recurringExpenses;
 
     @Enumerated(EnumType.STRING)
