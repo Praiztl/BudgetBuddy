@@ -69,10 +69,10 @@ public class DepartmentService {
      */
     @Transactional
     public ResponseEntity<?> updateDepartment(Long departmentId, String newName) {
-        if (!isCurrentUserAdmin()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "Only admins can update departments"));
-        }
+//        if (!isCurrentUserAdmin()) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body(Map.of("message", "Only admins can update departments"));
+//        }
 
         Optional<Department> department = departmentRepository.findById(departmentId);
         if (department.isEmpty()) {
@@ -87,10 +87,10 @@ public class DepartmentService {
     }
 
     public ResponseEntity<?> deleteDepartment(Long id) {
-        if (!isCurrentUserAdmin()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "Only admins can delete departments"));
-        }
+//        if (!isCurrentUserAdmin()) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                    .body(Map.of("message", "Only admins can delete departments"));
+//        }
 
         Optional<Department> department = departmentRepository.findById(id);
         if (department.isEmpty()) {

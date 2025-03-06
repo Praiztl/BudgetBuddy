@@ -74,6 +74,7 @@ public class DTOMapperService {
                 .amount(budget.getAmount())
                 .expenses(oneTimeExpenses)
                 .recurringExpenses(recurringExpenses)
+                .approvalStatus(budget.getStatus())
                 .build();
     }
 
