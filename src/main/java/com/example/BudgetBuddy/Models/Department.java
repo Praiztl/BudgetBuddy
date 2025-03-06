@@ -25,7 +25,7 @@ public class Department {
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Budget> budgets;
 
-    @OneToOne(mappedBy = "department", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private HOD hod;
 
 
