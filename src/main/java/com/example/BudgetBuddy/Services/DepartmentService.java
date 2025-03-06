@@ -55,6 +55,7 @@ public class DepartmentService {
 
         Department department = new Department();
         department.setName(departmentName);
+        department.setCreatedAt(LocalDate.now());
         return departmentRepository.save(department);
     }
 

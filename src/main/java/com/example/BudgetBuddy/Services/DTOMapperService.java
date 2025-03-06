@@ -2,12 +2,15 @@ package com.example.BudgetBuddy.Services;
 
 import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.*;
+import com.example.BudgetBuddy.Repositories.HODRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +18,8 @@ public class DTOMapperService {
 
     private final PasswordEncoder passwordEncoder;
 
-
+    @Autowired
+    private HODRepository hodRepository;
 
     // Convert HOD entity to HODResponseDTO (specific for HOD)
     public HODResponseDTO convertToHODResponseDTO(HOD hod) {
@@ -99,6 +103,16 @@ public class DTOMapperService {
                 .build();
     }
 
+    public String getHODForDepartment(Long departmentId){
+        List<HOD> allHods = hodRepository.findAll();
+        for (HOD hod : allHods){
+            if (Objects.equals(hod.getDepartment().getId(), departmentId)){
+                return hod.getFirstName() + " " + hod.getLastName();
+            }
+        }
+        return null;
+    }
+
     public GetDepartmentDTO convertToGetDepartmentDTO(Department department){
         List<BudgetDTO> budgetDTOS = new ArrayList<>();
         for(Budget budget: department.getBudgets()){
@@ -108,7 +122,8 @@ public class DTOMapperService {
                 .id(department.getId())
                 .name(department.getName())
                 .budgets(budgetDTOS)
-//                .hod(department.getHod().getId())
+                .hod(getHODForDepartment(department.getId()))
+                .createdAt(department.getCreatedAt())
                 .build();
     }
 }

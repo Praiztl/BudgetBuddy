@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -19,10 +20,12 @@ public class Department {
     @Column(unique = true, nullable = false)
     private String name;
 
+    private LocalDate createdAt;
+
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Budget> budgets;
 
-    @OneToOne(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "department", cascade = CascadeType.ALL)
     private HOD hod;
 
 
@@ -56,6 +59,7 @@ public class Department {
     public Department(Long departmentId, String departmentName) {
         this.id = departmentId;
         this.name= departmentName;
+        this.createdAt = LocalDate.now();
     }
 
 

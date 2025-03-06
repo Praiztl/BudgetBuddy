@@ -66,6 +66,7 @@ public class AuthenticationService {
     /**
      * Registers a new HOD.
      */
+    @Transactional // Ensure the whole operation is atomic
     public ResponseEntity<Map<String, String>> registerHOD(HODRegistrationDTO dto) {
         // Check if email already exists in either HOD or Admin table
         if (hodRepository.findByEmail(dto.getEmail()).isPresent() ||
@@ -74,29 +75,27 @@ public class AuthenticationService {
                     .body(Map.of("message", "User with this email already exists"));
         }
 
+        // Find the department
+        Department department = departmentRepository.findById(dto.getDepartmentId())
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
         // Convert DTO to Entity
         HOD hod = dtoMapperService.convertToHODEntity(dto);
         hod.setPassword(passwordEncoder.encode(dto.getPassword())); // Encode password
-
-        // Assign department and role
-        hod.setDepartment(departmentRepository.findById(dto.getDepartmentId())
-                .orElseThrow(() -> new RuntimeException("Department not found")));
         hod.setRole(HOD.Role.HOD);
 
-
-        // Save HOD to repository
+        // Save HOD first
         HOD savedHOD = hodRepository.save(hod);
 
-        //Add HOD to department sent in request
-        Department department = departmentRepository.findById(dto.getDepartmentId()).orElseThrow(() -> new RuntimeException("No department found"));
+        // Assign department to both entities
+        savedHOD.setDepartment(department);
         department.setHod(savedHOD);
+
+        // Save department again to persist the update
         departmentRepository.save(department);
 
-        // Generate and send OTP
-//        generateAndSendOTP(savedHOD.getEmail());
-
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("message", "HOD registered successfully. OTP sent to email."));
+                .body(Map.of("message", "HOD registered successfully."));
     }
 
 

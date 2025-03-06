@@ -34,7 +34,7 @@ public class HOD implements UserDetails {
     private boolean enabled;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "department_id", nullable = false) // Ensures the department column exists
+    @JoinColumn(name = "department_id", nullable = false, referencedColumnName = "id") // Ensures the department column exists
     private Department department;
 
     private Boolean isOtpVerified = false;
