@@ -1,6 +1,8 @@
 package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.BudgetDTO;
+import com.example.BudgetBuddy.DTO.OneTimeExpenseDTO;
+import com.example.BudgetBuddy.DTO.RecExpenseDTO;
 import com.example.BudgetBuddy.DTO.UpdateBudgetDTO;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.HOD;
@@ -132,13 +134,18 @@ public class BudgetController {
      */
 
     @PostMapping(path = "/{id}/expenses/create")
-    public OneTimeExpense createOneTimeExpense(@PathVariable(name = "id") Long id, @RequestBody OneTimeExpense expense){
-        return oneTimeExpenseService.createOneTimeExpense(expense, id).getBody();
+    public OneTimeExpenseDTO createOneTimeExpense(@PathVariable(name = "id") Long id, @RequestBody OneTimeExpense expense){
+        return dtoMapperService.convertToExpenseDTO(oneTimeExpenseService.createOneTimeExpense(expense, id).getBody());
     }
 
     @GetMapping(path = "/{id}/expenses")
-    public List<OneTimeExpense> getExpensesForBudget(@PathVariable(name = "id") Long id){
-        return oneTimeExpenseService.getForBudget(id).getBody();
+    public List<OneTimeExpenseDTO> getExpensesForBudget(@PathVariable(name = "id") Long id){
+        List<OneTimeExpense> expenses = oneTimeExpenseService.getForBudget(id).getBody();
+        List<OneTimeExpenseDTO> response = new ArrayList<>();
+        for (OneTimeExpense expense: expenses){
+            response.add(dtoMapperService.convertToExpenseDTO(expense));
+        }
+        return response;
     }
 
 
@@ -147,19 +154,18 @@ public class BudgetController {
      */
 
     @PostMapping(path = "/{id}/recurringexpenses/create")
-    public RecurringExpense createRecurringExpense(@PathVariable(name = "id") Long id, @RequestBody RecurringExpense expense){
-        return recurringExpenseService.createRecurringExpense(expense, id);
+    public RecExpenseDTO createRecurringExpense(@PathVariable(name = "id") Long id, @RequestBody RecurringExpense expense){
+        RecurringExpense expenses = recurringExpenseService.createRecurringExpense(expense, id);
+        return dtoMapperService.convertToRecExpenseDTO(expenses);
     }
 
     @GetMapping(path = "/{id}/recurringexpenses")
-    public List<RecurringExpense> getRecExpenses(@PathVariable(name = "id") Long departmentId){
-        List<RecurringExpense> result =  recurringExpenseService.getRejectedExpenses();
-        List<RecurringExpense> response = new ArrayList<>();
+    public List<RecExpenseDTO> getRecExpenses(@PathVariable(name = "id") Long departmentId){
+        List<RecurringExpense> result =  recurringExpenseService.getRecurringExpenses();
+        List<RecExpenseDTO> response = new ArrayList<>();
 
         for (RecurringExpense expense : result){
-            if(Objects.equals(expense.getAssignedTo().getId(), departmentId)){
-                response.add(expense);
-            }
+            response.add(dtoMapperService.convertToRecExpenseDTO(expense));
         }
         return response;
     }
