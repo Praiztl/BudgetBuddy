@@ -7,6 +7,7 @@ import com.example.BudgetBuddy.Models.HOD;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.HODRepository;
 import com.example.BudgetBuddy.Services.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
@@ -20,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -84,6 +87,18 @@ public class BudgetController {
     @GetMapping(path = "/{id}")
     public Budget getBudget(@PathVariable(name = "id") Long id){
         return service.getBudgetById(id);
+    }
+
+    @GetMapping(path = "/{id}/view")
+    public ResponseEntity<String> exportBudgetToCsv(@PathVariable Long id) {
+        StringWriter writer = new StringWriter();
+        csvUtil.writeBudgetToCsv(id, new PrintWriter(writer));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=budget.csv");
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
+
+        return new ResponseEntity<>(writer.toString(), headers, HttpStatus.OK);
     }
 
     @PutMapping(path = "/{id}/update")

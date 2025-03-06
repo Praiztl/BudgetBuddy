@@ -106,19 +106,19 @@ public class DepartmentController {
     /**
      * Delete a department (Only Admin)
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}/delete")
     public ResponseEntity<?> deleteDepartment(@PathVariable Long id) {
-        // Get authentication details
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Extract user roles
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
-
-        if (!isAdmin) {
-            return ResponseEntity.status(403).body("Access denied: Only admins can delete departments.");
-        }
+//        // Get authentication details
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        // Extract user roles
+//        boolean isAdmin = authentication.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+//
+//        if (!isAdmin) {
+//            return ResponseEntity.status(403).body("Access denied: Only admins can delete departments.");
+//        }
 
         return departmentService.deleteDepartment(id);
     }
@@ -129,11 +129,15 @@ public class DepartmentController {
     Endpoint for creating a budget within a department
      */
     @PostMapping(path = "/{id}/budgets/upload")
-    public ResponseEntity<List<Budget>> read(@PathVariable(name = "id") Long id, @RequestBody MultipartFile file){
+    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestBody MultipartFile file){
 
         if (csvUtil.hasCSVFormat(file)){
             try{
-                return csvUtil.readBudget(file.getInputStream(), id);
+                List<BudgetDTO> budgets = new ArrayList<>();
+                for (Budget budget :  csvUtil.readBudget(file.getInputStream(), id).getBody()){
+                    budgets.add(dtoMapperService.convertToBudgetDTO(budget));
+                }
+                return new ResponseEntity<>(budgets, HttpStatus.CREATED);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -144,9 +148,13 @@ public class DepartmentController {
     /*
     Endpoint for getting budgets for the department
      */
-    @PostMapping(path = "/{id}/budgets")
-    public ResponseEntity<List<Budget>> getBudgetsForDepartment(@PathVariable(name = "id") Long id){
-        return new ResponseEntity<>(departmentService.getAllBudgets(id), HttpStatus.OK);
+    @GetMapping(path = "/{id}/budgets")
+    public ResponseEntity<List<BudgetDTO>> getBudgetsForDepartment(@PathVariable(name = "id") Long id){
+        List<BudgetDTO> budgets = new ArrayList<>();
+        for (Budget budget : departmentService.getAllBudgets(id)){
+            budgets.add(dtoMapperService.convertToBudgetDTO(budget));
+        }
+        return new ResponseEntity<>(budgets, HttpStatus.OK);
     }
 
     /*

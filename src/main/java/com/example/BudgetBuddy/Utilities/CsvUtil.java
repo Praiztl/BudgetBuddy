@@ -1,12 +1,15 @@
 package com.example.BudgetBuddy.Utilities;
 
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Services.BudgetService;
+import com.example.BudgetBuddy.Services.DTOMapperService;
 import com.example.BudgetBuddy.Services.DepartmentService;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,9 @@ public class CsvUtil {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private DTOMapperService dtoMapperService;
 
     public String TYPE = "text/csv";
 
@@ -60,4 +67,13 @@ public class CsvUtil {
         }
     }
 
+    public void writeBudgetToCsv(Long budgetId,  PrintWriter writer) {
+        BudgetDTO budget = dtoMapperService.convertToBudgetDTO(budgetService.getBudgetById(budgetId));
+
+        try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("ID", "Name", "Amount", "Creation Date", "One-Time Expenses", "Recurring Expenses"))) {
+            csvPrinter.printRecord(budget.getId(), budget.getName(), budget.getAmount(), budget.getDate(), budget.getExpenses(), budget.getRecurringExpenses());
+        } catch (Exception e) {
+            throw new RuntimeException("Error writing CSV data: " + e.getMessage());
+        }
+    }
 }
