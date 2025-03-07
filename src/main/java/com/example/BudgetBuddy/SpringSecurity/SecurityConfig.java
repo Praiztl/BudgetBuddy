@@ -73,7 +73,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Allow specific frontend origins
-        config.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://8f9d-102-89-76-216.ngrok-free.app")); //http://localhost:3000
+        config.setAllowedOriginPatterns(List.of("http://localhost:3000", "https://budgetbuddyfe.onrender.com")); //http://localhost:3000
         config.setAllowCredentials(true); // Required if using authentication
 
         // Allow all standard headers and methods

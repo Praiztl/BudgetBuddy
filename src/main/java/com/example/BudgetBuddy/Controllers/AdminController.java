@@ -199,24 +199,31 @@ public class AdminController {
     }
 
     @GetMapping(path = "/dashboard/get-total-recurring-expense-list")
-    public List<RecExpenseDTO> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
+    public List<Object> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
         List<RecurringExpense> totalRecExpenseList = new ArrayList<>();
-        List<RecExpenseDTO> response = new ArrayList<>();
+        List<OneTimeExpense> totalOneTimeExpenseList = new ArrayList<>();
+        List<Object> response = new ArrayList<>();
 
         if(status == null) {
-            totalRecExpenseList = recurringExpenseService.getRecurringExpenses();
+            totalRecExpenseList=recurringExpenseService.getRecurringExpenses();
+            totalOneTimeExpenseList=oneTimeExpenseService.getOneTimeExpenses();
         }
         else if(status.equals(RecurringExpense.Status.Approved)){
-            totalRecExpenseList = recurringExpenseService.getApprovedExpenses();
+            totalRecExpenseList=recurringExpenseService.getApprovedExpenses();
+            totalOneTimeExpenseList=oneTimeExpenseService.getOneTimeExpenses();
         } else if (status.equals(RecurringExpense.Status.Pending)){
-            totalRecExpenseList = recurringExpenseService.getPendingExpenses();
+            totalRecExpenseList=recurringExpenseService.getPendingExpenses();
         } else if (status.equals(RecurringExpense.Status.Rejected)) {
-            totalRecExpenseList = recurringExpenseService.getRejectedExpenses();
+            totalRecExpenseList=recurringExpenseService.getRejectedExpenses();
         }
 
         for(RecurringExpense expense : totalRecExpenseList){
             response.add(dtoMapperService.convertToRecExpenseDTO(expense));
         }
+        for(OneTimeExpense expense: totalOneTimeExpenseList){
+            response.add(dtoMapperService.convertToMockRecExpenseDTO(expense));
+        }
+
         return response;
     }
 
