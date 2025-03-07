@@ -1,8 +1,6 @@
 package com.example.BudgetBuddy.Controllers;
 
-import com.example.BudgetBuddy.DTO.BudgetDTO;
-import com.example.BudgetBuddy.DTO.DepartmentDTO;
-import com.example.BudgetBuddy.DTO.GetDepartmentDTO;
+import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
@@ -12,19 +10,12 @@ import com.example.BudgetBuddy.Utilities.ExpenseSummariser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/departments")
@@ -157,12 +148,73 @@ public class DepartmentController {
         return new ResponseEntity<>(budgets, HttpStatus.OK);
     }
 
+
+    /*
+    Endpoints for one time expenses for the department
+     */
+    @PostMapping(path = "/{id}/expenses/create")
+    public OneTimeExpenseDTO createOneTimeExpense(@PathVariable(name = "id") Long id, @RequestBody OneTimeExpense expense){
+        return dtoMapperService.convertToExpenseDTO(oneTimeExpenseService.createOneTimeExpense(expense, id).getBody());
+    }
+
+
+    @GetMapping(path = "/{id}/expenses")
+    public List<OneTimeExpenseDTO> getExpensesForBudget(@PathVariable(name = "id") Long id){
+        List<OneTimeExpense> expenses = oneTimeExpenseService.getForDepartment(id).getBody();
+        List<OneTimeExpenseDTO> response = new ArrayList<>();
+        for (OneTimeExpense expense: expenses){
+            response.add(dtoMapperService.convertToExpenseDTO(expense));
+        }
+        return response;
+    }
+
+
+        /*
+    Endpoints for Recurring Expenses
+     */
+
+    @PostMapping(path = "/{id}/recurringexpenses/create")
+    public RecExpenseDTO createRecurringExpense(@PathVariable(name = "id") Long departmentId, @RequestBody RecurringExpense expense){
+        RecurringExpense expenses = recurringExpenseService.createRecurringExpense(expense, departmentId);
+        return dtoMapperService.convertToRecExpenseDTO(expenses);
+    }
+
+    @GetMapping(path = "/{id}/recurringexpenses")
+    public List<RecExpenseDTO> getRecExpenses(@PathVariable(name = "id") Long departmentId){
+        List<RecurringExpense> result =  recurringExpenseService.getRecurringExpenses();
+        List<RecExpenseDTO> response = new ArrayList<>();
+
+        for (RecurringExpense expense : result){
+            if (expense.getAssignedTo().getId().equals(departmentId)){
+                response.add(dtoMapperService.convertToRecExpenseDTO(expense));
+            }
+        }
+        return response;
+    }
+
+
     /*
     Getting notifications for this department
      */
     @GetMapping(path = "/{id}/notifications")
-    public ResponseEntity<List<Notification>> getNotificationsForHOD(@PathVariable(name = "id") Long id){
-        return new ResponseEntity<>(notificationService.getNotificationsByDepartment(departmentService.getDepartmentById(id).getBody().getName()), HttpStatus.OK);
+    public ResponseEntity<?> getNotificationsForHOD(@PathVariable(name = "id") Long id){
+        Map<String, Object> notificationMapping = new HashMap<>();
+        List<Notification> notifications = notificationService.getNotificationsByDepartment(departmentService.getDepartmentById(id).getBody());
+        List<Notification> recent = new ArrayList<>();
+        List<Notification> older = new ArrayList<>();
+
+        for (Notification notification: notifications){
+            if(LocalDate.now().compareTo(notification.getDate())<3){
+                recent.add(notification);
+            }
+            else{
+                older.add(notification);
+            }
+        }
+        notificationMapping.put("recent", recent);
+        notificationMapping.put("older", older);
+
+        return new ResponseEntity<>(notificationMapping, HttpStatus.OK);
     }
 
 

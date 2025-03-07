@@ -22,9 +22,12 @@ public class OneTimeExpenseService {
     @Autowired
     private BudgetService budgetService;
 
-    public ResponseEntity<OneTimeExpense> createOneTimeExpense(OneTimeExpense expense, Long budgetId){
+    @Autowired
+    private DepartmentService departmentService;
+
+    public ResponseEntity<OneTimeExpense> createOneTimeExpense(OneTimeExpense expense, Long departmentId){
         if (expense.getAssignedTo() == null) {
-            expense.setAssignedTo(budgetService.getBudgetById(budgetId));
+            expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
             expense.setCreatedAt(LocalDate.now());
             OneTimeExpense response = repository.save(expense);
             return new ResponseEntity<OneTimeExpense>(response, HttpStatus.CREATED);
@@ -47,10 +50,10 @@ public class OneTimeExpenseService {
         return repository.findAll();
     }
 
-    public ResponseEntity<List<OneTimeExpense>> getForBudget(Long budgetId){
+    public ResponseEntity<List<OneTimeExpense>> getForDepartment(Long departmentId){
         List<OneTimeExpense> expenses = new ArrayList<>();
         for (OneTimeExpense expense: repository.findAll()){
-            if(expense.getAssignedTo().getId().equals(budgetId)){
+            if(expense.getAssignedTo().getId().equals(departmentId)){
                 expenses.add(expense);
             }
         }

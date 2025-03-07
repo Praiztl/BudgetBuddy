@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +50,25 @@ public class AdminController {
     private AdminService adminService;
 
     @GetMapping(path = "/notifications")
-    public ResponseEntity<List<Notification>> getNotificationsForaAdmin(){
-        return new ResponseEntity<>(notificationService.getNotificationsForAdmin(), HttpStatus.OK);
+    public ResponseEntity<?> getNotificationsForaAdmin(){
+        Map<String, List<Notification>> notificationMapping = new HashMap<>();
+
+        List<Notification> allNotifications = notificationService.getNotificationsForAdmin();
+        List<Notification> older = new ArrayList<>();
+        List<Notification> recent = new ArrayList<>();
+
+        for(Notification notification: allNotifications){
+            if(notification.getDate()!= null && LocalDate.now().compareTo(notification.getDate())<3){
+                recent.add(notification);
+            } else{
+                older.add(notification);
+            }
+        }
+
+        notificationMapping.put("recent", recent);
+        notificationMapping.put("older", older);
+
+        return new ResponseEntity<>(notificationMapping, HttpStatus.OK);
     }
 
     @GetMapping(path = "/dashboard/get-budget-count-per-department")

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class BudgetService {
@@ -57,7 +56,7 @@ public class BudgetService {
         notificationService.createNotification(new Notification(
                 "Budget Approval",
                 "Budget %s has been approved".formatted(savedBudget.getName()),
-                savedBudget.getDepartment().getName()
+                savedBudget.getDepartment()
         ));
         return savedBudget;
     }
@@ -69,7 +68,7 @@ public class BudgetService {
         notificationService.createNotification(new Notification(
                 "Budget Rejection",
                 "Budget %s has been rejected".formatted(savedBudget.getName()),
-                savedBudget.getDepartment().getName()
+                savedBudget.getDepartment()
         ));
         return budget;
     }

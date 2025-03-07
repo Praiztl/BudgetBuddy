@@ -133,42 +133,9 @@ public class BudgetController {
     Endpoints for One Time Expenses
      */
 
-    @PostMapping(path = "/{id}/expenses/create")
-    public OneTimeExpenseDTO createOneTimeExpense(@PathVariable(name = "id") Long id, @RequestBody OneTimeExpense expense){
-        return dtoMapperService.convertToExpenseDTO(oneTimeExpenseService.createOneTimeExpense(expense, id).getBody());
-    }
-
-    @GetMapping(path = "/{id}/expenses")
-    public List<OneTimeExpenseDTO> getExpensesForBudget(@PathVariable(name = "id") Long id){
-        List<OneTimeExpense> expenses = oneTimeExpenseService.getForBudget(id).getBody();
-        List<OneTimeExpenseDTO> response = new ArrayList<>();
-        for (OneTimeExpense expense: expenses){
-            response.add(dtoMapperService.convertToExpenseDTO(expense));
-        }
-        return response;
-    }
 
 
-    /*
-    Endpoints for Recurring Expenses
-     */
 
-    @PostMapping(path = "/{id}/recurringexpenses/create")
-    public RecExpenseDTO createRecurringExpense(@PathVariable(name = "id") Long id, @RequestBody RecurringExpense expense){
-        RecurringExpense expenses = recurringExpenseService.createRecurringExpense(expense, id);
-        return dtoMapperService.convertToRecExpenseDTO(expenses);
-    }
-
-    @GetMapping(path = "/{id}/recurringexpenses")
-    public List<RecExpenseDTO> getRecExpenses(@PathVariable(name = "id") Long departmentId){
-        List<RecurringExpense> result =  recurringExpenseService.getRecurringExpenses();
-        List<RecExpenseDTO> response = new ArrayList<>();
-
-        for (RecurringExpense expense : result){
-            response.add(dtoMapperService.convertToRecExpenseDTO(expense));
-        }
-        return response;
-    }
 
 }
 

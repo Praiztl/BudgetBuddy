@@ -61,23 +61,11 @@ public class DTOMapperService {
     }
 
     public BudgetDTO convertToBudgetDTO(Budget budget){
-        List<String> oneTimeExpenses = new ArrayList<>();
-        for(OneTimeExpense expense: budget.getExpenses()){
-            oneTimeExpenses.add(expense.toString());
-        }
-
-        List<String> recurringExpenses = new ArrayList<>();
-        for(RecurringExpense expense: budget.getRecurringExpenses()){
-            recurringExpenses.add(expense.toString());
-        }
-
         return BudgetDTO.builder()
                 .id(budget.getId())
                 .name(budget.getName())
                 .date(budget.getCreatedAt())
                 .amount(budget.getAmount())
-                .expenses(oneTimeExpenses)
-                .recurringExpenses(recurringExpenses)
                 .approvalStatus(budget.getStatus())
                 .build();
     }
@@ -87,7 +75,7 @@ public class DTOMapperService {
                 .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
-                .assignedTo(expense.getAssignedTo().getName())
+                .assignedTo(expense.getAssignedTo().getId())
                 .createdAt(expense.getCreatedAt())
                 .build();
     }
@@ -97,7 +85,7 @@ public class DTOMapperService {
                 .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
-                .assignedTo(expense.getAssignedTo().getName())
+                .assignedTo(expense.getAssignedTo().getId())
                 .expenseInterval(expense.getExpenseInterval())
                 .approvalStatus(expense.getApprovalStatus())
                 .build();
@@ -115,14 +103,27 @@ public class DTOMapperService {
 
     public GetDepartmentDTO convertToGetDepartmentDTO(Department department){
         List<BudgetDTO> budgetDTOS = new ArrayList<>();
+        List<RecExpenseDTO>recExpenseDTOS = new ArrayList<>();
+        List<OneTimeExpenseDTO> oneTimeExpenseDTOS = new ArrayList<>();
+
         for(Budget budget: department.getBudgets()){
             budgetDTOS.add(convertToBudgetDTO(budget));
+        }
+
+        for (RecurringExpense expense: department.getRecurringExpenses()){
+            recExpenseDTOS.add(convertToRecExpenseDTO(expense));
+        }
+
+        for (OneTimeExpense expense: department.getExpenses()){
+            oneTimeExpenseDTOS.add(convertToExpenseDTO(expense));
         }
         return GetDepartmentDTO.builder()
                 .id(department.getId())
                 .name(department.getName())
                 .budgets(budgetDTOS)
                 .hod(getHODForDepartment(department.getId()))
+                .oneTimeExpenses(oneTimeExpenseDTOS)
+                .recurringExpenses(recExpenseDTOS)
                 .createdAt(department.getCreatedAt())
                 .build();
     }

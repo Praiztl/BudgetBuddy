@@ -1,7 +1,6 @@
 package com.example.BudgetBuddy.Models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -28,6 +27,47 @@ public class Department {
     @OneToOne(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private HOD hod;
 
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecurringExpense> recurringExpenses;
+
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OneTimeExpense> expenses;
+
+    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public List<Budget> getBudgets() {
+        return budgets;
+    }
+
+    public void setBudgets(List<Budget> budgets) {
+        this.budgets = budgets;
+    }
+
+    public List<RecurringExpense> getRecurringExpenses() {
+        return recurringExpenses;
+    }
+
+    public void setRecurringExpenses(List<RecurringExpense> recurringExpenses) {
+        this.recurringExpenses = recurringExpenses;
+    }
+
+    public List<OneTimeExpense> getExpenses() {
+        return expenses;
+    }
+
+    public void setExpenses(List<OneTimeExpense> expenses) {
+        this.expenses = expenses;
+    }
 
     public Long getId() {
         return id;

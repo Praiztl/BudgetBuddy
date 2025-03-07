@@ -70,8 +70,8 @@ public class CsvUtil {
     public void writeBudgetToCsv(Long budgetId,  PrintWriter writer) {
         BudgetDTO budget = dtoMapperService.convertToBudgetDTO(budgetService.getBudgetById(budgetId));
 
-        try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("ID", "Name", "Amount", "Creation Date", "One-Time Expenses", "Recurring Expenses"))) {
-            csvPrinter.printRecord(budget.getId(), budget.getName(), budget.getAmount(), budget.getDate(), budget.getExpenses(), budget.getRecurringExpenses());
+        try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("ID", "Name", "Amount", "Creation Date"))){// "One-Time Expenses", "Recurring Expenses"))) {
+            csvPrinter.printRecord(budget.getId(), budget.getName(), budget.getAmount(), budget.getDate()); //, budget.getExpenses(), budget.getRecurringExpenses());
         } catch (Exception e) {
             throw new RuntimeException("Error writing CSV data: " + e.getMessage());
         }

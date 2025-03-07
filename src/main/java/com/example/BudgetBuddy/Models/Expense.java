@@ -20,6 +20,6 @@ public class Expense {
 
     LocalDate createdAt;
 
-    private Budget assignedTo;
+    private Department assignedTo;
 
 }

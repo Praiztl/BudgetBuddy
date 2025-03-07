@@ -1,17 +1,14 @@
 package com.example.BudgetBuddy.Services;
 
-import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.BudgetBuddy.Models.RecurringExpense.Interval;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class RecurringExpenseService {
@@ -22,10 +19,13 @@ public class RecurringExpenseService {
     private BudgetService budgetService;
 
     @Autowired
+    private DepartmentService departmentService;
+
+    @Autowired
     private NotificationService notificationService;
 
-    public RecurringExpense createRecurringExpense(RecurringExpense expense, Long budgetId){
-        expense.setAssignedTo(budgetService.getBudgetById(budgetId));
+    public RecurringExpense createRecurringExpense(RecurringExpense expense, Long departmentId){
+        expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
         expense.setCreatedAt(LocalDate.now());
         expense.setApprovalStatus(RecurringExpense.Status.Pending);
         RecurringExpense savedExpense = repository.save(expense);
@@ -61,7 +61,7 @@ public class RecurringExpenseService {
         notificationService.createNotification(new Notification(
                 "Recurring Expense Approval",
                 "Recurring expense %s has been approved".formatted(savedExpense.getName()),
-                savedExpense.getAssignedTo().getDepartment().getName()
+                savedExpense.getAssignedTo()
         ));
         return savedExpense;
     }
@@ -73,7 +73,7 @@ public class RecurringExpenseService {
         notificationService.createNotification(new Notification(
                 "Recurring Expense Rejection",
                 "Recurring expense %s has been rejected".formatted(savedExpense.getName()),
-                savedExpense.getAssignedTo().getDepartment().getName()
+                savedExpense.getAssignedTo()
         ));
         return savedExpense;
     }

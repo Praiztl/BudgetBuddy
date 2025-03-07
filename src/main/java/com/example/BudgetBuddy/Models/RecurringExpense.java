@@ -22,7 +22,7 @@ public class RecurringExpense extends Expense{
 
     @ManyToOne
     @JoinColumn(name = "assignedTo_id")
-    private Budget assignedTo;
+    private Department assignedTo;
 
     @Enumerated(EnumType.STRING)
     private Interval expenseInterval = Interval.Weekly;
@@ -71,18 +71,26 @@ public class RecurringExpense extends Expense{
         this.createdAt = createdAt;
     }
 
-    public Budget getAssignedTo() {
+    public Status getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public void setApprovalStatus(Status approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
+
+    public Department getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(Budget assignedTo) {
+    public void setAssignedTo(Department assignedTo) {
         this.assignedTo = assignedTo;
     }
 
     public RecurringExpense() {
     }
 
-    public RecurringExpense(String name, Double amount, Budget assignedTo, Interval interval) {
+    public RecurringExpense(String name, Double amount, Department assignedTo, Interval interval) {
         this.name = name;
         this.amount = amount;
         this.assignedTo = assignedTo;

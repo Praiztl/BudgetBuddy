@@ -16,20 +16,16 @@ public class BudgetDTO {
     private String name;
     private LocalDate date;
     private Double amount;
-    private List<String> expenses;
-    private List<String> recurringExpenses;
     private Budget.Status approvalStatus;
 
     public BudgetDTO() {
     }
 
-    public BudgetDTO(Long id, String name, LocalDate date, Double amount, List<String> expenses, List<String> recurringExpenses, Budget.Status status) {
+    public BudgetDTO(Long id, String name, LocalDate date, Double amount, Budget.Status status) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.amount = amount;
-        this.expenses = expenses;
-        this.recurringExpenses = recurringExpenses;
         this.approvalStatus = status;
     }
 }

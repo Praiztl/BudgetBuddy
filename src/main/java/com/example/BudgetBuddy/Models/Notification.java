@@ -16,7 +16,9 @@ public class Notification {
 
     private String message;
 
-    private String departmentName;
+    @ManyToOne
+    @JoinColumn(name = "assignedTo_id")
+    private Department assignedTo;
 
     private LocalDate date;
 
@@ -35,15 +37,19 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(String type, String message, String departmentName) {
+    public Notification(String type, String message, Department department) {
         this.type = type;
         this.message = message;
-        this.departmentName = departmentName;
+        this.assignedTo = department;
+        this.date = LocalDate.now();
+        this.time = LocalTime.now();
     }
 
     public Notification(String type, String message) {
         this.type = type;
         this.message = message;
+        this.date = LocalDate.now();
+        this.time = LocalTime.now();
     }
 
     public Long getId() {
@@ -70,12 +76,12 @@ public class Notification {
         this.message = message;
     }
 
-    public String getDepartmentName() {
-        return departmentName;
+    public Department getAssignedTo() {
+        return assignedTo;
     }
 
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
+    public void setAssignedTo(Department assignedTo) {
+        this.assignedTo = assignedTo;
     }
 
     public LocalDate getDate() {

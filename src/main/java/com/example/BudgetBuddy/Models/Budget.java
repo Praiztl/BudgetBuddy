@@ -24,11 +24,6 @@ public class Budget {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OneTimeExpense> expenses;
-
-    @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecurringExpense> recurringExpenses;
 
     @Enumerated(EnumType.STRING)
     private Status status = Status.Pending;
@@ -65,14 +60,6 @@ public class Budget {
         this.amount = amount;
     }
 
-    public List<OneTimeExpense> getExpenses() {
-        return expenses;
-    }
-
-    public void setExpenses(List<OneTimeExpense> expenses) {
-        this.expenses = expenses;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -87,10 +74,6 @@ public class Budget {
 
     public void setDepartment(Department department) {
         this.department = department;
-    }
-
-    public List<RecurringExpense> getRecurringExpenses() {
-        return recurringExpenses;
     }
 
     public Budget() {
@@ -109,7 +92,6 @@ public class Budget {
                 ", name='" + name + '\'' +
                 ", createdAt=" + createdAt +
                 ", amount=" + amount +
-                ", expenses=" + expenses +
                 ", status='" + status + '\'' +
                 '}';
     }

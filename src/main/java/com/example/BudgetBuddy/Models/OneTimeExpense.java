@@ -3,7 +3,6 @@ package com.example.BudgetBuddy.Models;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "one_time_expenses")
@@ -28,9 +27,9 @@ public class OneTimeExpense extends Expense {
 
     @ManyToOne
     @JoinColumn(name = "assignedTo_id")
-    private Budget assignedTo;
+    private Department assignedTo;
 
-    public OneTimeExpense(String name, Double amount, Budget assignedTo) {
+    public OneTimeExpense(String name, Double amount, Department assignedTo) {
         this.name = name;
         this.amount = amount;
         this.assignedTo = assignedTo;
@@ -64,11 +63,11 @@ public class OneTimeExpense extends Expense {
         this.amount = amount;
     }
 
-    public Budget getAssignedTo() {
+    public Department getAssignedTo() {
         return assignedTo;
     }
 
-    public void setAssignedTo(Budget assignedTo) {
+    public void setAssignedTo(Department assignedTo) {
         this.assignedTo = assignedTo;
     }
 

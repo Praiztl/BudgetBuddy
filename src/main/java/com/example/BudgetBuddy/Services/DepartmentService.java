@@ -153,7 +153,7 @@ public class DepartmentService {
         List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
         List<RecurringExpense> response = new ArrayList<>();
         for(RecurringExpense expense : expenses){
-            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId)){
                 response.add(expense);
             }
         }
@@ -165,7 +165,7 @@ public class DepartmentService {
         List<RecurringExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(RecurringExpense expense : expenses){
-            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId) && expense.getCreatedAt().getYear() == LocalDate.now().getYear()){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId) && expense.getCreatedAt().getYear() == LocalDate.now().getYear()){
                 response.add(expense);
             }
         }
@@ -189,7 +189,7 @@ public class DepartmentService {
         List<RecurringExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(RecurringExpense expense : expenses){
-            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId)){
                 response.add(expense);
             }
         }
@@ -219,7 +219,7 @@ public class DepartmentService {
         List<OneTimeExpense> expenses = oneTimeExpenseRepository.findAll();
         List<OneTimeExpense> response = new ArrayList<>();
         for(OneTimeExpense expense : expenses){
-            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId)){
                 response.add(expense);
             }
         }
@@ -231,7 +231,7 @@ public class DepartmentService {
         List<OneTimeExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(OneTimeExpense expense : expenses){
-            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId) && expense.getCreatedAt().getYear()==LocalDate.now().getYear()){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId) && expense.getCreatedAt().getYear()==LocalDate.now().getYear()){
                 response.add(expense);
             }
         }
@@ -248,7 +248,7 @@ public class DepartmentService {
         List<OneTimeExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(OneTimeExpense expense : expenses){
-            if(Objects.equals(expense.getAssignedTo().getDepartment().getId(), departmentId)){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId)){
                 response.add(expense);
             }
         }

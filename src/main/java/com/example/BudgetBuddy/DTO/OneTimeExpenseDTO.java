@@ -16,7 +16,7 @@ public class OneTimeExpenseDTO {
 
     private Double amount;
 
-    private String assignedTo;
+    private Long assignedTo;
 
     private LocalDate createdAt;
 

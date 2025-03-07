@@ -53,12 +53,12 @@ public class RecurringExpenseController {
     }
 
     @PutMapping(path = "/{id}/approve")
-    public RecExpenseDTO approveExpense(Integer expenseId){
+    public RecExpenseDTO approveExpense(@PathVariable(name = "id") Integer expenseId){
         return dtoMapperService.convertToRecExpenseDTO(service.approveExpense(expenseId));
     }
 
     @PutMapping(path = "/{id}/reject")
-    public RecExpenseDTO rejectExpense(Integer expenseId){
+    public RecExpenseDTO rejectExpense(@PathVariable(name = "id") Integer expenseId){
         return dtoMapperService.convertToRecExpenseDTO(service.rejectExpense(expenseId));
     }
 

@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Repositories.NotificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,12 @@ public class NotificationService {
         return notificationRepository.findAll();
     }
 
-    public List<Notification> getNotificationsByDepartment(String departmentName){
+    public List<Notification> getNotificationsByDepartment(Department department){
         List<Notification> notifications = notificationRepository.findAll();
         List<Notification> result = new ArrayList<>();
 
         for(Notification notification : notifications){
-            if(notification.getDepartmentName().equals(departmentName)){
+            if((notification.getAssignedTo()!= null && notification.getAssignedTo().equals(department))){
                 result.add(notification);
             }
         }
@@ -42,7 +43,7 @@ public class NotificationService {
         List<Notification> result = new ArrayList<>();
 
         for(Notification notification : notifications){
-            if(notification.getDepartmentName()==null){
+            if(notification.getAssignedTo()==null){
                 result.add(notification);
             }
         }
