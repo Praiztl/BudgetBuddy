@@ -160,6 +160,40 @@ public class DepartmentService {
         return response;
     }
 
+    public List<RecurringExpense> getPendingRecurringExpenses(Long departmentId){
+        List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        for(RecurringExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId) && expense.getApprovalStatus().equals(RecurringExpense.Status.Pending)){
+                response.add(expense);
+            }
+        }
+        return response;
+    }
+
+    public List<RecurringExpense> getApprovedRecurringExpenses(Long departmentId){
+        List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        for(RecurringExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId) && expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
+                response.add(expense);
+            }
+        }
+        return response;
+    }
+
+    public List<RecurringExpense> getRejectedRecurringExpenses(Long departmentId){
+        List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
+        List<RecurringExpense> response = new ArrayList<>();
+        for(RecurringExpense expense : expenses){
+            if(Objects.equals(expense.getAssignedTo().getId(), departmentId) && expense.getApprovalStatus().equals(RecurringExpense.Status.Rejected)){
+                response.add(expense);
+            }
+        }
+        return response;
+    }
+
+
     public Double getMonthlyAmountRecurringExpenses(Long departmentId, String monthName){
         List<RecurringExpense> expenses = recurringExpenseRepository.findAll();
         List<RecurringExpense> response = new ArrayList<>();

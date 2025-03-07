@@ -254,6 +254,26 @@ public class DepartmentController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/{id}/dashboard/pending-recurring-expense-count")
+    public ResponseEntity<Integer> getPendingRecurringExpenseCount(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getPendingRecurringExpenses(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/dashboard/approved-recurring-expense-count")
+    public ResponseEntity<Integer> getApprovedRecurringExpenseCount(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getApprovedRecurringExpenses(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/dashboard/rejected-recurring-expense-count")
+    public ResponseEntity<Integer> getRejectedRecurringExpenseCount(@PathVariable(name = "id") Long departmentId){
+        Integer response = departmentService.getRejectedRecurringExpenses(departmentId).size();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+
     @GetMapping(path = "/{id}/dashboard/expense-chart")
     public ResponseEntity<HODExpenseChart> getHODExpenseChart(@PathVariable(name = "id") Long departmentId){
         List<Expense> expenseList = new ArrayList<>();
@@ -280,6 +300,17 @@ public class DepartmentController {
     @GetMapping(path = "/{id}/dashboard/budget-list")
     public ResponseEntity<List<BudgetDTO>> getBudgetList(@PathVariable(name = "id")Long departmentId){
         List<BudgetDTO> response = departmentService.getBudgetDTOs(departmentId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{id}/dashboard/recurring-expense-list")
+    public ResponseEntity<?> getRecExpenseList(@PathVariable(name = "id") Long departmentId){
+        List<RecurringExpense> result = departmentService.getRecurringExpenses(departmentId);
+        List<RecExpenseDTO> response = new ArrayList<>();
+        for(RecurringExpense expense:result){
+            response.add(dtoMapperService.convertToRecExpenseDTO(expense));
+        }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
