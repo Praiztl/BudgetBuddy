@@ -192,7 +192,7 @@ public class DTOMapperService {
         if (from == null){
             from = "No sender";
         }
-        String assignedTo = notification.getAssignedTo().getName()
+        String assignedTo = notification.getAssignedTo().getName();
         if(assignedTo == null){
             assignedTo = "Admin";
         }
