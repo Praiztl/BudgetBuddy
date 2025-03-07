@@ -194,7 +194,7 @@ public class DTOMapperService {
         }
         String assignedTo = notification.getAssignedTo().getName()
         if(assignedTo == null){
-            assignedTo = "Admin"
+            assignedTo = "Admin";
         }
         return NotificationDTO.builder()
                 .id(notification.getId())
