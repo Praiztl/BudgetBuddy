@@ -163,12 +163,16 @@ public class DTOMapperService {
     }
 
     public NotificationDTO convertToNotificationDTO(Notification notification){
+        String from = notification.getSender();
+        if (from == null){
+            from = "No sender";
+        }
         return NotificationDTO.builder()
                 .id(notification.getId())
                 .type(notification.getType())
                 .message(notification.getMessage())
                 .departmentId(notification.getAssignedTo().getId())
-                .from(notification.getFrom())
+                .from(from)
                 .date(notification.getDate())
                 .time(notification.getTime())
                 .isRead(notification.getRead())

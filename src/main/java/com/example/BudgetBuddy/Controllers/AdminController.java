@@ -52,13 +52,13 @@ public class AdminController {
 
     @GetMapping(path = "/notifications")
     public ResponseEntity<?> getNotificationsForaAdmin(){
-        Map<String, List<Notification>> notificationMapping = new HashMap<>();
+        Map<String, List<NotificationDTO>> notificationMapping = new HashMap<>();
 
-        List<Notification> allNotifications = notificationService.getNotificationsForAdmin();
-        List<Notification> older = new ArrayList<>();
-        List<Notification> recent = new ArrayList<>();
+        List<NotificationDTO> allNotifications = notificationService.getNotificationsForAdmin();
+        List<NotificationDTO> older = new ArrayList<>();
+        List<NotificationDTO> recent = new ArrayList<>();
 
-        for(Notification notification: allNotifications){
+        for(NotificationDTO notification: allNotifications){
             if(notification.getDate()!= null && LocalDate.now().compareTo(notification.getDate())<3){
                 recent.add(notification);
             } else{

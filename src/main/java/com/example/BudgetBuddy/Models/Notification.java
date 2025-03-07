@@ -20,14 +20,14 @@ public class Notification {
     @JoinColumn(name = "assignedTo_id")
     private Department assignedTo;
 
-    private String from;
+    private String sender;
 
-    public String getFrom() {
-        return from;
+    public String getSender() {
+        return sender;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     private LocalDate date;
@@ -51,7 +51,7 @@ public class Notification {
         this.type = type;
         this.message = message;
         this.assignedTo = department;
-        this.from = from;
+        this.sender = from;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
     }
@@ -59,7 +59,7 @@ public class Notification {
     public Notification(String type, String message, String from) {
         this.type = type;
         this.message = message;
-        this.from = from;
+        this.sender = from;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
     }

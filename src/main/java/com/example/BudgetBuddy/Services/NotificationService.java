@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.DTO.NotificationDTO;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Repositories.NotificationRepository;
@@ -16,6 +17,9 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Autowired
+    private DTOMapperService dtoMapperService;
+
     public Notification createNotification(Notification notification){
         notification.setDate(LocalDate.now());
         notification.setTime(LocalTime.now());
@@ -27,25 +31,25 @@ public class NotificationService {
     }
 
 
-    public List<Notification> getNotificationsByDepartment(Department department){
+    public List<NotificationDTO> getNotificationsByDepartment(Department department){
         List<Notification> notifications = notificationRepository.findAll();
-        List<Notification> result = new ArrayList<>();
+        List<NotificationDTO> result = new ArrayList<>();
 
         for(Notification notification : notifications){
             if((notification.getAssignedTo()!= null && notification.getAssignedTo().equals(department))){
-                result.add(notification);
+                result.add(dtoMapperService.convertToNotificationDTO(notification));
             }
         }
         return result;
     }
 
-    public List<Notification> getNotificationsForAdmin(){
+    public List<NotificationDTO> getNotificationsForAdmin(){
         List<Notification> notifications = notificationRepository.findAll();
-        List<Notification> result = new ArrayList<>();
+        List<NotificationDTO> result = new ArrayList<>();
 
         for(Notification notification : notifications){
             if(notification.getAssignedTo()==null){
-                result.add(notification);
+                result.add(dtoMapperService.convertToNotificationDTO(notification));
             }
         }
         return result;
