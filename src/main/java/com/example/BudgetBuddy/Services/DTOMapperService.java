@@ -25,6 +25,12 @@ public class DTOMapperService {
     @Autowired
     private BudgetRepository budgetRepository;
 
+    @Autowired
+    private OneTimeExpenseRepository oneTimeExpenseRepository;
+
+    @Autowired
+    private RecurringExpenseRepository recurringExpenseRepository;
+
     // Convert HOD entity to HODResponseDTO (specific for HOD)
     public HODResponseDTO convertToHODResponseDTO(HOD hod) {
         return HODResponseDTO.builder()
@@ -65,11 +71,28 @@ public class DTOMapperService {
     }
 
     public BudgetDTO convertToBudgetDTO(Budget budget){
+        List<OneTimeExpense> oneTimeExpenses = oneTimeExpenseRepository.findAll();
+        List<String> oneTimeExpensesBudget = new ArrayList<>();
+        for(OneTimeExpense expense: oneTimeExpenses){
+            if(expense.getBudgetName().equals(budget.getName()))
+            oneTimeExpensesBudget.add(expense.toString);
+        }
+
+        List<RecurringExpense> recurringExpenses = recurringExpenseRepository.findAll();
+        List<String> recurringExpensesBudget = new ArrayList<>();
+        for(OneTimeExpense expense: oneTimeExpenses){
+            if(expense.getBudgetName().equals(budget.getName()))
+            oneTimeExpensesBudget.add(expense.toString);
+        }
+
+
         return BudgetDTO.builder()
                 .id(budget.getId())
                 .name(budget.getName())
                 .date(budget.getCreatedAt())
                 .amount(budget.getAmount())
+                .oneTimeExpenses(oneTimeExpensesBudget)
+                .recurringExpebnses(recurringExpensesBudget)
                 .departmentName(budget.getDepartment().getName())
                 .approvalStatus(budget.getStatus())
                 .build();
@@ -167,11 +190,15 @@ public class DTOMapperService {
         if (from == null){
             from = "No sender";
         }
+        String assignedTo = notification.getAssignedTo().getName()
+        if(assignedTo == null){
+            assignedTo = "Admin"
+        }
         return NotificationDTO.builder()
                 .id(notification.getId())
                 .type(notification.getType())
                 .message(notification.getMessage())
-                .departmentId(notification.getAssignedTo().getId())
+                .assignedTo(assignedTo)
                 .from(from)
                 .date(notification.getDate())
                 .time(notification.getTime())

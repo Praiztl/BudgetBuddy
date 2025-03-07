@@ -20,6 +20,8 @@ public class BudgetDTO {
     private Double amount;
     private String departmentName;
     private Budget.Status approvalStatus;
+    private List<String> oneTimeExpenses;
+    private List<String> recurringExpenses;
 
     public BudgetDTO() {
     }

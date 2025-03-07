@@ -14,7 +14,7 @@ public class NotificationDTO {
     private Long id;
     private String type;
     private String message;
-    private Long departmentId;
+    private String assignedTo;
     private String from;
     private LocalDate date;
     private LocalTime time;
