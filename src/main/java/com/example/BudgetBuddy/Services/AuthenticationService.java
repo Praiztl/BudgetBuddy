@@ -94,6 +94,9 @@ public class AuthenticationService {
         // Save department again to persist the update
         departmentRepository.save(department);
 
+//        // Generate and send OTP
+//        generateAndSendOTP(savedHOD.getEmail());
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "HOD registered successfully."));
     }
