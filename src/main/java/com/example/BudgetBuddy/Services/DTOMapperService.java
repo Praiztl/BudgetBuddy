@@ -127,4 +127,16 @@ public class DTOMapperService {
                 .createdAt(department.getCreatedAt())
                 .build();
     }
+
+    public NotificationDTO convertToNotificationDTO(Notification notification){
+        return NotificationDTO.builder()
+                .id(notification.getId())
+                .type(notification.getType())
+                .message(notification.getMessage())
+                .departmentId(notification.getAssignedTo().getId())
+                .date(notification.getDate())
+                .time(notification.getTime())
+                .isRead(notification.getRead())
+                .build();
+    }
 }

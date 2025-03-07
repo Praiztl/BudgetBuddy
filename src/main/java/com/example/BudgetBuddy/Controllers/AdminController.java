@@ -1,6 +1,7 @@
 package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.BudgetDTO;
+import com.example.BudgetBuddy.DTO.NotificationDTO;
 import com.example.BudgetBuddy.DTO.RecExpenseDTO;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
@@ -51,17 +52,17 @@ public class AdminController {
 
     @GetMapping(path = "/notifications")
     public ResponseEntity<?> getNotificationsForaAdmin(){
-        Map<String, List<Notification>> notificationMapping = new HashMap<>();
+        Map<String, List<NotificationDTO>> notificationMapping = new HashMap<>();
 
         List<Notification> allNotifications = notificationService.getNotificationsForAdmin();
-        List<Notification> older = new ArrayList<>();
-        List<Notification> recent = new ArrayList<>();
+        List<NotificationDTO> older = new ArrayList<>();
+        List<NotificationDTO> recent = new ArrayList<>();
 
         for(Notification notification: allNotifications){
             if(notification.getDate()!= null && LocalDate.now().compareTo(notification.getDate())<3){
-                recent.add(notification);
+                recent.add(dtoMapperService.convertToNotificationDTO(notification));
             } else{
-                older.add(notification);
+                older.add(dtoMapperService.convertToNotificationDTO(notification));
             }
         }
 

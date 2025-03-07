@@ -200,15 +200,15 @@ public class DepartmentController {
     public ResponseEntity<?> getNotificationsForHOD(@PathVariable(name = "id") Long id){
         Map<String, Object> notificationMapping = new HashMap<>();
         List<Notification> notifications = notificationService.getNotificationsByDepartment(departmentService.getDepartmentById(id).getBody());
-        List<Notification> recent = new ArrayList<>();
-        List<Notification> older = new ArrayList<>();
+        List<NotificationDTO> recent = new ArrayList<>();
+        List<NotificationDTO> older = new ArrayList<>();
 
         for (Notification notification: notifications){
             if(LocalDate.now().compareTo(notification.getDate())<3){
-                recent.add(notification);
+                recent.add(dtoMapperService.convertToNotificationDTO(notification));
             }
             else{
-                older.add(notification);
+                older.add(dtoMapperService.convertToNotificationDTO(notification));
             }
         }
         notificationMapping.put("recent", recent);
