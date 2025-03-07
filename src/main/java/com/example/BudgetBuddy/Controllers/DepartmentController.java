@@ -120,7 +120,7 @@ public class DepartmentController {
     Endpoint for creating a budget within a department
      */
     @PostMapping(path = "/{id}/budgets/upload")
-    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestParam (name = "file") MultipartFile file){
+    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestPart ("file") MultipartFile file){
 
         if (csvUtil.hasCSVFormat(file)){
             try{
