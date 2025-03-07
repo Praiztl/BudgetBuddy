@@ -121,7 +121,7 @@ public class DepartmentController {
     Endpoint for creating a budget within a department
      */
     @PostMapping(path = "/{id}/budgets/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestParam ("file") MultipartFile file){
+    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestParam ("file") Object file){
 
         if (csvUtil.hasCSVFormat(file)){
             try{
