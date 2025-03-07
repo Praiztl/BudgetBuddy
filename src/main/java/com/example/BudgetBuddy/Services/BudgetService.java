@@ -23,7 +23,8 @@ public class BudgetService {
         Budget savedBudget =  budgetRepo.save(newBudget);
         notificationService.createNotification(new Notification(
                 "Budget Submission",
-                "New budget %s submitted for approval".formatted(savedBudget.getName())
+                "New budget %s submitted for approval".formatted(savedBudget.getName()),
+                savedBudget.getDepartment().getName()
                 ));
         return savedBudget;
     }
@@ -56,19 +57,21 @@ public class BudgetService {
         notificationService.createNotification(new Notification(
                 "Budget Approval",
                 "Budget %s has been approved".formatted(savedBudget.getName()),
-                savedBudget.getDepartment()
+                savedBudget.getDepartment(),
+                "Admin"
         ));
         return savedBudget;
     }
 
-    public Budget rejectBudget(Long id){
+    public Budget rejectBudget(Long id, String message){
         Budget budget = budgetRepo.findById(id).orElseThrow(() -> new RuntimeException("Budget with this ID does not exist."));
         budget.setStatus(Budget.Status.Rejected);
         Budget savedBudget = budgetRepo.save(budget);
         notificationService.createNotification(new Notification(
                 "Budget Rejection",
-                "Budget %s has been rejected".formatted(savedBudget.getName()),
-                savedBudget.getDepartment()
+                "Budget %s has been rejected".formatted(savedBudget.getName() + "/n %s".formatted(message)),
+                savedBudget.getDepartment(),
+                "Admin"
         ));
         return budget;
     }

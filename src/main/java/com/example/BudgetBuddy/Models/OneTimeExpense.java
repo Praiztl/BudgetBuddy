@@ -17,6 +17,17 @@ public class OneTimeExpense extends Expense {
 
     private LocalDate createdAt;
 
+
+    public String getBudgetName() {
+        return budgetName;
+    }
+
+    public void setBudgetName(String budgetName) {
+        this.budgetName = budgetName;
+    }
+
+    private String budgetName;
+
     public LocalDate getCreatedAt() {
         return createdAt;
     }

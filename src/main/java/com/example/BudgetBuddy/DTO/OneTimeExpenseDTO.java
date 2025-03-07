@@ -22,4 +22,6 @@ public class OneTimeExpenseDTO {
 
     private String approvalStatus;
 
+    private String budgetName;
+
 }

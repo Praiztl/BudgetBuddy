@@ -124,9 +124,9 @@ public class BudgetController {
     }
 
     //Endpoint to reject budget
-    @PutMapping(path = "/{id}/reject")
-    public Budget reject(@PathVariable(name = "id") Long id){
-        return service.rejectBudget(id);
+    @PostMapping(path = "/{id}/reject")
+    public Budget reject(@PathVariable(name = "id") Long id, @RequestBody String message){
+        return service.rejectBudget(id, message);
     }
 
     /*

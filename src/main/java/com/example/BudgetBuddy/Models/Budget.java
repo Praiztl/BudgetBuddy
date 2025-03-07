@@ -79,6 +79,10 @@ public class Budget {
     public Budget() {
     }
 
+    public Budget(String name) {
+        this.name = name;
+    }
+
     public Budget(String name, Double amount) {
         this.name = name;
         this.amount = amount;

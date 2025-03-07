@@ -25,4 +25,6 @@ public class RecExpenseDTO {
 
     @Enumerated(EnumType.STRING)
     private RecurringExpense.Status approvalStatus;
+
+    private String budgetName;
 }

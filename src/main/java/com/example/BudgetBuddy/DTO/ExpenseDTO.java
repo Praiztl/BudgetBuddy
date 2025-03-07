@@ -15,4 +15,5 @@ public class ExpenseDTO {
     private String assignedTo;
     private String expenseInterval;
     private String approvalStatus;
+    private String budgetName;
 }

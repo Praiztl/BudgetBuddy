@@ -1,6 +1,7 @@
 package com.example.BudgetBuddy.DTO;
 
 import com.example.BudgetBuddy.Models.Budget;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,11 +12,13 @@ import java.util.List;
 @Setter
 @Getter
 @Builder
+@AllArgsConstructor
 public class BudgetDTO {
     private Long id;
     private String name;
     private LocalDate date;
     private Double amount;
+    private String departmentName;
     private Budget.Status approvalStatus;
 
     public BudgetDTO() {

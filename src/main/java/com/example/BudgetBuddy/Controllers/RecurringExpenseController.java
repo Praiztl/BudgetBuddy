@@ -57,9 +57,9 @@ public class RecurringExpenseController {
         return dtoMapperService.convertToRecExpenseDTO(service.approveExpense(expenseId));
     }
 
-    @PutMapping(path = "/{id}/reject")
-    public RecExpenseDTO rejectExpense(@PathVariable(name = "id") Integer expenseId){
-        return dtoMapperService.convertToRecExpenseDTO(service.rejectExpense(expenseId));
+    @PostMapping(path = "/{id}/reject")
+    public RecExpenseDTO rejectExpense(@PathVariable(name = "id") Integer expenseId, @RequestBody String message){
+        return dtoMapperService.convertToRecExpenseDTO(service.rejectExpense(expenseId, message));
     }
 
 }

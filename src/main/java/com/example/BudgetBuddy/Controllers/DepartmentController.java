@@ -9,6 +9,7 @@ import com.example.BudgetBuddy.Utilities.CsvUtil;
 import com.example.BudgetBuddy.Utilities.ExpenseSummariser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -119,8 +120,8 @@ public class DepartmentController {
     /*
     Endpoint for creating a budget within a department
      */
-    @PostMapping(path = "/{id}/budgets/upload")
-    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestPart ("file") MultipartFile file){
+    @PostMapping(path = "/{id}/budgets/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestParam ("file") MultipartFile file){
 
         if (csvUtil.hasCSVFormat(file)){
             try{

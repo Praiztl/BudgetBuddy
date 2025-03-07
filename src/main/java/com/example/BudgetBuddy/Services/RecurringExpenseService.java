@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
@@ -28,10 +29,12 @@ public class RecurringExpenseService {
         expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
         expense.setCreatedAt(LocalDate.now());
         expense.setApprovalStatus(RecurringExpense.Status.Pending);
+        expense.setBudget(((Budget) budgetService.getAllBudgets().toArray()[1]).getName());
         RecurringExpense savedExpense = repository.save(expense);
         notificationService.createNotification(new Notification(
                 "Recurring Expense Submission",
-                "New recurring expense %s submitted for approval.".formatted(savedExpense.getName())
+                "New recurring expense %s submitted for approval.".formatted(savedExpense.getName()),
+                savedExpense.getAssignedTo().getName()
         ));
         return savedExpense;
     }
@@ -61,19 +64,21 @@ public class RecurringExpenseService {
         notificationService.createNotification(new Notification(
                 "Recurring Expense Approval",
                 "Recurring expense %s has been approved".formatted(savedExpense.getName()),
-                savedExpense.getAssignedTo()
+                savedExpense.getAssignedTo(),
+                "Admin"
         ));
         return savedExpense;
     }
 
-    public RecurringExpense rejectExpense(Integer id){
+    public RecurringExpense rejectExpense(Integer id, String message){
         RecurringExpense expense = repository.findById(id).orElseThrow(() -> new RuntimeException("Recurring expense with this ID does not exist."));
         expense.setApprovalStatus(RecurringExpense.Status.Rejected);
         RecurringExpense savedExpense = repository.save(expense);
         notificationService.createNotification(new Notification(
                 "Recurring Expense Rejection",
-                "Recurring expense %s has been rejected".formatted(savedExpense.getName()),
-                savedExpense.getAssignedTo()
+                "Recurring expense %s has been rejected".formatted(savedExpense.getName() + "/n %s".formatted(message)),
+                savedExpense.getAssignedTo(),
+                "Admin"
         ));
         return savedExpense;
     }

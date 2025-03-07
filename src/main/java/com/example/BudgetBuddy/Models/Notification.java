@@ -20,6 +20,16 @@ public class Notification {
     @JoinColumn(name = "assignedTo_id")
     private Department assignedTo;
 
+    private String from;
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
     private LocalDate date;
 
     private LocalTime time;
@@ -37,17 +47,19 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(String type, String message, Department department) {
+    public Notification(String type, String message, Department department, String from) {
         this.type = type;
         this.message = message;
         this.assignedTo = department;
+        this.from = from;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
     }
 
-    public Notification(String type, String message) {
+    public Notification(String type, String message, String from) {
         this.type = type;
         this.message = message;
+        this.from = from;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
     }

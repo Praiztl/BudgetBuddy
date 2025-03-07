@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recurring_expenses")
@@ -30,6 +29,15 @@ public class RecurringExpense extends Expense{
     @Enumerated(EnumType.STRING)
     private Status approvalStatus;
 
+    private String budget;
+
+    public String getBudget() {
+        return budget;
+    }
+
+    public void setBudget(String budget) {
+        this.budget = budget;
+    }
 
     public Interval getExpenseInterval() {
         return expenseInterval;

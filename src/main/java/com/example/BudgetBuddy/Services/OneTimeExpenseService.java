@@ -1,18 +1,16 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Repositories.OneTimeExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OneTimeExpenseService {
@@ -29,6 +27,7 @@ public class OneTimeExpenseService {
         if (expense.getAssignedTo() == null) {
             expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
             expense.setCreatedAt(LocalDate.now());
+            expense.setBudgetName(((Budget) budgetService.getAllBudgets().toArray()[1]).getName());
             OneTimeExpense response = repository.save(expense);
             return new ResponseEntity<OneTimeExpense>(response, HttpStatus.CREATED);
         }else{

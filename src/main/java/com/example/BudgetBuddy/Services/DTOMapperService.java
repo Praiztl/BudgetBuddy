@@ -2,6 +2,7 @@ package com.example.BudgetBuddy.Services;
 
 import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.*;
+import com.example.BudgetBuddy.Repositories.BudgetRepository;
 import com.example.BudgetBuddy.Repositories.HODRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class DTOMapperService {
 
     @Autowired
     private HODRepository hodRepository;
+
+    @Autowired
+    private BudgetRepository budgetRepository;
 
     // Convert HOD entity to HODResponseDTO (specific for HOD)
     public HODResponseDTO convertToHODResponseDTO(HOD hod) {
@@ -66,38 +70,56 @@ public class DTOMapperService {
                 .name(budget.getName())
                 .date(budget.getCreatedAt())
                 .amount(budget.getAmount())
+                .departmentName(budget.getDepartment().getName())
                 .approvalStatus(budget.getStatus())
                 .build();
     }
 
+    String defaultBudgetName = "Staff Welfare";
+
     public OneTimeExpenseDTO convertToExpenseDTO(OneTimeExpense expense){
+        String budgetName = expense.getBudgetName();
+        if(budgetName == null){
+            budgetName = "Staff Welfare";
+        }
         return OneTimeExpenseDTO.builder()
                 .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
                 .assignedTo(expense.getAssignedTo().getId())
+                .budgetName(budgetName)
                 .createdAt(expense.getCreatedAt())
                 .approvalStatus("Approved")
                 .build();
     }
 
     public RecExpenseDTO convertToRecExpenseDTO(RecurringExpense expense){
+        String budgetName = expense.getBudget();
+        if(budgetName == null){
+            budgetName = "Staff Welfare";
+        }
         return RecExpenseDTO.builder()
                 .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
                 .assignedTo(expense.getAssignedTo().getName())
+                .budgetName(budgetName)
                 .expenseInterval(expense.getExpenseInterval())
                 .approvalStatus(expense.getApprovalStatus())
                 .build();
     }
 
     public ExpenseDTO convertToMockRecExpenseDTO(OneTimeExpense expense){
+        String budgetName = expense.getBudgetName();
+        if(budgetName == null){
+            budgetName = "Staff Welfare";
+        }
         return ExpenseDTO.builder()
                 .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
                 .assignedTo(expense.getAssignedTo().getName())
+                .budgetName(budgetName)
                 .approvalStatus("Approved")
                 .expenseInterval("one-time expense")
                 .build();
@@ -146,6 +168,7 @@ public class DTOMapperService {
                 .type(notification.getType())
                 .message(notification.getMessage())
                 .departmentId(notification.getAssignedTo().getId())
+                .from(notification.getFrom())
                 .date(notification.getDate())
                 .time(notification.getTime())
                 .isRead(notification.getRead())
