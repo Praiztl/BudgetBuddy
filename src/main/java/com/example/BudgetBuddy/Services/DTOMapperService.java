@@ -74,15 +74,17 @@ public class DTOMapperService {
         List<OneTimeExpense> oneTimeExpenses = oneTimeExpenseRepository.findAll();
         List<String> oneTimeExpensesBudget = new ArrayList<>();
         for(OneTimeExpense expense: oneTimeExpenses){
-            if(expense.getBudgetName().equals(budget.getName()))
-            oneTimeExpensesBudget.add(expense.toString);
+            if(expense.getBudgetName().equals(budget.getName())){
+                oneTimeExpensesBudget.add(expense.toString);
+            }
         }
 
         List<RecurringExpense> recurringExpenses = recurringExpenseRepository.findAll();
         List<String> recurringExpensesBudget = new ArrayList<>();
         for(OneTimeExpense expense: oneTimeExpenses){
-            if(expense.getBudgetName().equals(budget.getName()))
-            oneTimeExpensesBudget.add(expense.toString);
+            if(expense.getBudgetName().equals(budget.getName())){
+                oneTimeExpensesBudget.add(expense.toString);
+            }
         }
 
 
