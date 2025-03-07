@@ -21,6 +21,11 @@ public class NotificationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/{id}/view")
+    public ResponseEntity<?> viewNotification(@PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(notificationService.readNotification(id), HttpStatus.OK);
+    }
+
     @DeleteMapping(path = "/{id}/delete")
     public ResponseEntity<String> deleteNotification(@PathVariable(name = "id") Long id){
         notificationService.deleteNotificationById(id);

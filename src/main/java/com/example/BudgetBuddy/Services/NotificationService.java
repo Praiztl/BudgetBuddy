@@ -26,6 +26,7 @@ public class NotificationService {
         return notificationRepository.findAll();
     }
 
+
     public List<Notification> getNotificationsByDepartment(Department department){
         List<Notification> notifications = notificationRepository.findAll();
         List<Notification> result = new ArrayList<>();
@@ -56,6 +57,7 @@ public class NotificationService {
         if(!notification.getRead()){
             notification.setRead(true);
         }
+        notificationRepository.save(notification);
         return notification;
     }
 
