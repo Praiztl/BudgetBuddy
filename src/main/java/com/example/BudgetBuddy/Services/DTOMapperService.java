@@ -77,6 +77,7 @@ public class DTOMapperService {
                 .amount(expense.getAmount())
                 .assignedTo(expense.getAssignedTo().getId())
                 .createdAt(expense.getCreatedAt())
+                .approvalStatus("Approved")
                 .build();
     }
 
@@ -85,9 +86,20 @@ public class DTOMapperService {
                 .id(expense.getId())
                 .name(expense.getName())
                 .amount(expense.getAmount())
-                .assignedTo(expense.getAssignedTo().getId())
+                .assignedTo(expense.getAssignedTo().getName())
                 .expenseInterval(expense.getExpenseInterval())
                 .approvalStatus(expense.getApprovalStatus())
+                .build();
+    }
+
+    public ExpenseDTO convertToMockRecExpenseDTO(OneTimeExpense expense){
+        return ExpenseDTO.builder()
+                .id(expense.getId())
+                .name(expense.getName())
+                .amount(expense.getAmount())
+                .assignedTo(expense.getAssignedTo().getName())
+                .approvalStatus("Approved")
+                .expenseInterval("one-time expense")
                 .build();
     }
 

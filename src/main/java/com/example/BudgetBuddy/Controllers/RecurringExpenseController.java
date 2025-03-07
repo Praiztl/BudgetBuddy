@@ -42,8 +42,8 @@ public class RecurringExpenseController {
     Endpoint to retrieve a specific recurring expense
      */
     @GetMapping(path = "/{id}")
-    public RecurringExpense getRecurringExpense(@PathVariable(name = "id") Integer id){
-        return service.getRecurringExpense(id);
+    public RecExpenseDTO getRecurringExpense(@PathVariable(name = "id") Integer id){
+        return dtoMapperService.convertToRecExpenseDTO(service.getRecurringExpense(id));
     }
 
     @DeleteMapping(path = "/{id}/delete")

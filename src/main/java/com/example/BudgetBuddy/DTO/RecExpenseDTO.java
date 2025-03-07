@@ -18,7 +18,7 @@ public class RecExpenseDTO {
 
     private Double amount;
 
-    private Long assignedTo;
+    private String assignedTo;
 
     @Enumerated(EnumType.STRING)
     private RecurringExpense.Interval expenseInterval;

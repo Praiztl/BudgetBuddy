@@ -305,10 +305,16 @@ public class DepartmentController {
 
     @GetMapping(path = "/{id}/dashboard/recurring-expense-list")
     public ResponseEntity<?> getRecExpenseList(@PathVariable(name = "id") Long departmentId){
-        List<RecurringExpense> result = departmentService.getRecurringExpenses(departmentId);
-        List<RecExpenseDTO> response = new ArrayList<>();
-        for(RecurringExpense expense:result){
+        List<RecurringExpense> resultRecurring = departmentService.getRecurringExpenses(departmentId);
+        List<OneTimeExpense> resultOneTime = departmentService.getOneTimeExpenses(departmentId);
+
+        List<Object> response = new ArrayList<>();
+        for(RecurringExpense expense:resultRecurring){
             response.add(dtoMapperService.convertToRecExpenseDTO(expense));
+        }
+
+        for(OneTimeExpense expense: resultOneTime){
+            response.add(dtoMapperService.convertToMockRecExpenseDTO(expense));
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);

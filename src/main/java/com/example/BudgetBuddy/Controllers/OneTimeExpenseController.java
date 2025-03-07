@@ -1,10 +1,12 @@
 package com.example.BudgetBuddy.Controllers;
 
+import com.example.BudgetBuddy.DTO.ExpenseDTO;
 import com.example.BudgetBuddy.DTO.OneTimeExpenseDTO;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Services.DTOMapperService;
 import com.example.BudgetBuddy.Services.OneTimeExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +24,9 @@ public class OneTimeExpenseController {
     private DTOMapperService dtoMapperService;
 
     @PostMapping(path = "/create")
-    public ResponseEntity<OneTimeExpense> createOneTimeExpense(@RequestBody OneTimeExpense expense, @RequestBody Long budgetId){
-        return service.createOneTimeExpense(expense, budgetId);
+    public ResponseEntity<OneTimeExpenseDTO> createOneTimeExpense(@RequestBody OneTimeExpense expense, @RequestBody Long budgetId){
+        OneTimeExpenseDTO response =  dtoMapperService.convertToExpenseDTO(service.createOneTimeExpense(expense, budgetId).getBody());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /*
@@ -41,8 +44,8 @@ public class OneTimeExpenseController {
     }
 
     @GetMapping(path = "/{id}")
-    public OneTimeExpense getOneTimeExpense(@PathVariable(name = "id") Integer id){
-        return service.getOneTimeExpense(id);
+    public OneTimeExpenseDTO getOneTimeExpense(@PathVariable(name = "id") Integer id){
+        return dtoMapperService.convertToExpenseDTO(service.getOneTimeExpense(id));
     }
 
     @DeleteMapping(path = "/{id}/delete")
