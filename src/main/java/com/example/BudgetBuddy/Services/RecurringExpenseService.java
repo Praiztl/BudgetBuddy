@@ -29,7 +29,7 @@ public class RecurringExpenseService {
         expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
         expense.setCreatedAt(LocalDate.now());
         expense.setApprovalStatus(RecurringExpense.Status.Pending);
-        expense.setBudget(((Budget) budgetService.getAllBudgets().toArray()[1]).getName());
+        expense.setBudget(((Budget) departmentService.getApprovedBudgets(departmentId).toArray()[1]).getName());
         RecurringExpense savedExpense = repository.save(expense);
         notificationService.createNotification(new Notification(
                 "Recurring Expense Submission",
