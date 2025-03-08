@@ -121,21 +121,26 @@ public class DepartmentController {
     Endpoint for creating a budget within a department
      */
     @PostMapping(path = "/{id}/budgets/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestParam ("file") MultipartFile file){
+    public ResponseEntity<List<BudgetDTO>> read(@PathVariable(name = "id") Long id, @RequestParam("files") List<MultipartFile> files) {
+        List<BudgetDTO> allBudgets = new ArrayList<>();
 
-        if (csvUtil.hasCSVFormat(file)){
-            try{
-                List<BudgetDTO> budgets = new ArrayList<>();
-                for (Budget budget :  csvUtil.readBudget(file.getInputStream(), id).getBody()){
-                    budgets.add(dtoMapperService.convertToBudgetDTO(budget));
+        for (MultipartFile file : files) {
+            if (csvUtil.hasCSVFormat(file)) {
+                try {
+                    List<BudgetDTO> budgets = new ArrayList<>();
+                    for (Budget budget : csvUtil.readBudget(file.getInputStream(), id).getBody()) {
+                        budgets.add(dtoMapperService.convertToBudgetDTO(budget));
+                    }
+                    allBudgets.addAll(budgets);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                return new ResponseEntity<>(budgets, HttpStatus.CREATED);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         }
-        return null;
+
+        return new ResponseEntity<>(allBudgets, HttpStatus.CREATED);
     }
+
 
     /*
     Endpoint for getting budgets for the department

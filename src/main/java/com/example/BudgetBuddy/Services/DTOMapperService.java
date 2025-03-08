@@ -76,6 +76,9 @@ public class DTOMapperService {
         List<OneTimeExpense> oneTimeExpenses = oneTimeExpenseRepository.findAll();
         List<String> oneTimeExpensesBudget = new ArrayList<>();
         for(OneTimeExpense expense: oneTimeExpenses){
+            if(expense.getBudgetName()==null){
+                expense.setBudgetName("Staff Welfare");
+            }
             if(expense.getBudgetName().equals(budget.getName())){
                 oneTimeExpensesBudget.add(expense.toString());
             }
@@ -83,9 +86,12 @@ public class DTOMapperService {
 
         List<RecurringExpense> recurringExpenses = recurringExpenseRepository.findAll();
         List<String> recurringExpensesBudget = new ArrayList<>();
-        for(OneTimeExpense expense: oneTimeExpenses){
-            if(expense.getBudgetName().equals(budget.getName())){
-                oneTimeExpensesBudget.add(expense.toString());
+        for(RecurringExpense expense: recurringExpenses){
+            if(expense.getBudget()==null){
+                expense.setBudget("Staff Welfare");
+            }
+            if(expense.getBudget().equals(budget.getName())){
+                recurringExpensesBudget.add(expense.toString());
             }
         }
 
@@ -194,9 +200,11 @@ public class DTOMapperService {
         if (from == null){
             from = "No sender";
         }
-        String assignedTo = notification.getAssignedTo().getName();
-        if(assignedTo == null){
+        String assignedTo = "";
+        if(notification.getAssignedTo() == null){
             assignedTo = "Admin";
+        } else if (notification.getAssignedTo()!= null){
+            assignedTo = notification.getAssignedTo().getName();
         }
         return NotificationDTO.builder()
                 .id(notification.getId())
