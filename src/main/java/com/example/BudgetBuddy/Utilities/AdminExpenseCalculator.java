@@ -25,7 +25,7 @@ public class AdminExpenseCalculator {
 
 
     public Double getMonthlyAmountRecurringExpenses(String monthName){
-        List<RecurringExpense> expenses = recurringExpenseService.getRecurringExpenses();
+        List<RecurringExpense> expenses = recurringExpenseService.getApprovedExpenses();
         List<RecurringExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(RecurringExpense expense : expenses){
@@ -50,7 +50,7 @@ public class AdminExpenseCalculator {
     }
 
     public Double getYearlyAmountRecurringExpenses(Integer year){
-        List<RecurringExpense> expenses = recurringExpenseService.getRecurringExpenses();
+        List<RecurringExpense> expenses = recurringExpenseService.getApprovedExpenses();
         List<RecurringExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(RecurringExpense expense : expenses){
@@ -108,10 +108,10 @@ public class AdminExpenseCalculator {
         return total;
     }
 
-    public Map<Integer, Double> calculateYearlyBudgetAmount(Integer year){
+    public Map<Integer, Double> calculateYearlyBudgetAmount(Integer year, List<Budget> budgetList){
         Map<Integer, Double> yearlyBudgetAmountMap = new HashMap<>();
         Double yearlyBudgetAmount = 0.0;
-        List<Budget> budgetList = budgetService.getAllBudgets();
+//        List<Budget> budgetList = budgetService.getAllBudgets();
         List<Budget> yearlyBudgetList = new ArrayList<>();
 
         // Initialising a list of budgets for specified year

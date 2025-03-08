@@ -138,7 +138,7 @@ public class ExpenseSummariser {
 
         for (Budget budget : budgetList){
             Integer year = budget.getCreatedAt().getYear();
-            Map<Integer, Double> oneYearMap = adminExpenseCalculator.calculateYearlyBudgetAmount(year);
+            Map<Integer, Double> oneYearMap = adminExpenseCalculator.calculateYearlyBudgetAmount(year, budgetList);
             boolean found = false;
                 if (adminYearlyBudgetTotal.get(year)==null) {
                     adminYearlyBudgetTotal.put(year, oneYearMap.get(year));
