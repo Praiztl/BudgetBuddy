@@ -170,11 +170,14 @@ public class DTOMapperService {
 
     public GetDepartmentDTO convertToGetDepartmentDTO(Department department){
         List<BudgetDTO> budgetDTOS = new ArrayList<>();
+        List<Budget> allBudgets = budgetRepository.findAll();
         List<RecExpenseDTO>recExpenseDTOS = new ArrayList<>();
         List<OneTimeExpenseDTO> oneTimeExpenseDTOS = new ArrayList<>();
 
-        for(Budget budget: department.getBudgets()){
-            budgetDTOS.add(convertToBudgetDTO(budget));
+        for(Budget budget: allBudgets){
+            if(budget.getDepartment().equals(department) && budget.getStatus().equals(Budget.Status.Approved)) {
+                budgetDTOS.add(convertToBudgetDTO(budget));
+            }
         }
 
         for (RecurringExpense expense: department.getRecurringExpenses()){

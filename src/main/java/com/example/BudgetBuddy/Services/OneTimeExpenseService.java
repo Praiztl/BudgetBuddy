@@ -27,7 +27,7 @@ public class OneTimeExpenseService {
         if (expense.getAssignedTo() == null) {
             expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
             expense.setCreatedAt(LocalDate.now());
-            expense.setBudgetName(((Budget) departmentService.getApprovedBudgets(departmentId).toArray()[1]).getName());
+            expense.setBudgetName((departmentService.getApprovedBudgets(departmentId).get(0).getName()));
             OneTimeExpense response = repository.save(expense);
             return new ResponseEntity<OneTimeExpense>(response, HttpStatus.CREATED);
         }else{

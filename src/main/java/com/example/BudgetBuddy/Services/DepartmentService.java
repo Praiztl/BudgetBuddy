@@ -120,7 +120,7 @@ public class DepartmentService {
         List<Budget> budgets = budgetRepo.findAll();
         List<BudgetDTO> response = new ArrayList<>();
         for(Budget budget : budgets){
-            if(budget.getStatus().equals(Budget.Status.Approved) && Objects.equals(budget.getDepartment().getId(), departmentId)){
+            if(budget.getStatus().equals(Budget.Status.Approved) && budget.getDepartment().getId().equals(departmentId)){
                 response.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }

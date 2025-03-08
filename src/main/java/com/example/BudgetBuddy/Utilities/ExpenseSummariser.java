@@ -58,7 +58,7 @@ public class ExpenseSummariser {
             String monthValue = expense.getCreatedAt().getMonth().name().substring(0, 3);
 
             oneSummary.put("month", monthValue);
-            oneSummary.put("amount", recurringExpenseService.getMonthlyAmountRecurringExpenses(monthValue)+recurringExpenseService.getMonthlyAmountRecurringExpenses(monthValue));
+            oneSummary.put("amount", adminExpenseCalculator.getMonthlyAmountRecurringExpenses(monthValue)+adminExpenseCalculator.getMonthlyAmountOneTimeExpenses(monthValue));
             boolean found = false;
             for (Map<String, Object> existingSummary : monthlySummary) {
                 if (existingSummary.get("month").equals(monthValue)) {
@@ -113,7 +113,7 @@ public class ExpenseSummariser {
             Integer yearValue = expense.getCreatedAt().getYear();
 
             oneSummary.put("year", yearValue);
-            oneSummary.put("amount", recurringExpenseService.getYearlyAmountRecurringExpenses(yearValue) +recurringExpenseService.getYearlyAmountRecurringExpenses(yearValue));
+            oneSummary.put("amount", adminExpenseCalculator.getYearlyAmountRecurringExpenses(yearValue) +adminExpenseCalculator.getYearlyAmountOneTimeExpenses(yearValue));
             boolean found = false;
             for (Map<String, Object> existingSummary : yearlySummary) {
                 if (existingSummary.get("year").equals(yearValue)) {
