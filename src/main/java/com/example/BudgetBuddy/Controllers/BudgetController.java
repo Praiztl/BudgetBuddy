@@ -1,9 +1,6 @@
 package com.example.BudgetBuddy.Controllers;
 
-import com.example.BudgetBuddy.DTO.BudgetDTO;
-import com.example.BudgetBuddy.DTO.OneTimeExpenseDTO;
-import com.example.BudgetBuddy.DTO.RecExpenseDTO;
-import com.example.BudgetBuddy.DTO.UpdateBudgetDTO;
+import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.HOD;
 import com.example.BudgetBuddy.Models.RecurringExpense;
@@ -125,8 +122,8 @@ public class BudgetController {
 
     //Endpoint to reject budget
     @PostMapping(path = "/{id}/reject")
-    public Budget reject(@PathVariable(name = "id") Long id, @RequestBody String message){
-        return service.rejectBudget(id, message);
+    public Budget reject(@PathVariable(name = "id") Long id, @RequestBody RejectionMessageDTO message){
+        return service.rejectBudget(id, message.getReason());
     }
 
     /*

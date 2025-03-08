@@ -69,7 +69,7 @@ public class BudgetService {
         Budget savedBudget = budgetRepo.save(budget);
         notificationService.createNotification(new Notification(
                 "Budget Rejection",
-                "Budget %s has been rejected".formatted(savedBudget.getName() + "/n %s".formatted(message)),
+                "Budget %s has been rejected because: %s.".formatted(savedBudget.getName(),message),
                 savedBudget.getDepartment(),
                 "Admin"
         ));

@@ -1,6 +1,7 @@
 package com.example.BudgetBuddy.Controllers;
 
 import com.example.BudgetBuddy.DTO.RecExpenseDTO;
+import com.example.BudgetBuddy.DTO.RejectionMessageDTO;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Services.DTOMapperService;
 import com.example.BudgetBuddy.Services.RecurringExpenseService;
@@ -58,8 +59,8 @@ public class RecurringExpenseController {
     }
 
     @PostMapping(path = "/{id}/reject")
-    public RecExpenseDTO rejectExpense(@PathVariable(name = "id") Integer expenseId, @RequestBody String message){
-        return dtoMapperService.convertToRecExpenseDTO(service.rejectExpense(expenseId, message));
+    public RecExpenseDTO rejectExpense(@PathVariable(name = "id") Integer expenseId, @RequestBody RejectionMessageDTO message){
+        return dtoMapperService.convertToRecExpenseDTO(service.rejectExpense(expenseId, message.getReason()));
     }
 
 }

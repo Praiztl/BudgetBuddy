@@ -76,7 +76,7 @@ public class RecurringExpenseService {
         RecurringExpense savedExpense = repository.save(expense);
         notificationService.createNotification(new Notification(
                 "Recurring Expense Rejection",
-                "Recurring expense %s has been rejected".formatted(savedExpense.getName() + "/n %s".formatted(message)),
+                "Recurring expense %s has been rejected because %s.".formatted(savedExpense.getName(),message),
                 savedExpense.getAssignedTo(),
                 "Admin"
         ));

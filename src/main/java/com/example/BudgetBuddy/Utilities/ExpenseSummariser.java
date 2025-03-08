@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseSummariser {
@@ -152,14 +153,14 @@ public class ExpenseSummariser {
         if(monthValue==null){
             monthValue=LocalDate.now().getMonth().name().substring(0,3);
         }
-        List<Map<String, Object>> monthlySummary = new ArrayList<>();
-        Map<String, Object> summaryItem = new HashMap<>();
+        List<Map<String, Double>> summaryItem = new ArrayList<>();
+        Map<String, Object> monthlySummary = new HashMap<>();
 
         for (RecurringExpense expense : expenseList
-//                .stream()
-//                .sorted(Comparator.comparingDouble(RecurringExpense::getAmount).reversed()) // Sort by amount in descending order
-//                .limit(5) // Take the top 5
-//                .collect(Collectors.toList())
+                .stream()
+                .sorted(Comparator.comparingDouble(RecurringExpense::getAmount).reversed()) // Sort by amount in descending order
+                .limit(4) // Take the top 5
+                .toList()
         ) {
             Map<String, Double> summaryItemDetail = new HashMap<>();
 
@@ -171,10 +172,10 @@ public class ExpenseSummariser {
             if(monthKey.equals(monthValue) && year == LocalDate.now().getYear()){
                 summaryItemDetail.put(expenseName, summaryItemDetail.getOrDefault(expenseName, 0.0) + amount);
             }
-            summaryItem.put(monthKey, summaryItemDetail);
-            monthlySummary.add(summaryItem);
+            summaryItem.add(summaryItemDetail);
+            monthlySummary.put(monthKey, summaryItem);
         }
 
-        return summaryItem; // Return the summary as a list
+        return monthlySummary; // Return the summary as a list
     }
 }
