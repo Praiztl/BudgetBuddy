@@ -150,7 +150,7 @@ public class AdminController {
         for(OneTimeExpense expense: oneTimeExpenseService.getOneTimeExpenses()){
             expenseList.add(expense);
         }
-        for(RecurringExpense expense: recurringExpenseService.getRecurringExpenses()){
+        for(RecurringExpense expense: recurringExpenseService.getApprovedExpenses()){
             expenseList.add(expense);
         }
         HODExpenseChart response = new HODExpenseChart(

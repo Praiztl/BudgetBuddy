@@ -283,7 +283,7 @@ public class DepartmentController {
     @GetMapping(path = "/{id}/dashboard/expense-chart")
     public ResponseEntity<HODExpenseChart> getHODExpenseChart(@PathVariable(name = "id") Long departmentId){
         List<Expense> expenseList = new ArrayList<>();
-        for(RecurringExpense expense :departmentService.getRecurringExpenses(departmentId)){
+        for(RecurringExpense expense :departmentService.getApprovedRecurringExpenses(departmentId)){
             expenseList.add(expense);
         }
         for(OneTimeExpense expense :departmentService.getOneTimeExpenses(departmentId)){
@@ -299,7 +299,7 @@ public class DepartmentController {
 
     @GetMapping(path = "/{id}/dashboard/expense-summary")
     public ResponseEntity <Map<String, Object>> getExpenseSummary(@PathVariable(name = "id") Long departmentId, @RequestParam(name = "month", required = false) String monthValue){
-        Map<String, Object> response =  expenseSummariser.currentMonthSummary(departmentService.getRecurringExpenses(departmentId),monthValue);
+        Map<String, Object> response =  expenseSummariser.currentMonthSummary(departmentService.getApprovedRecurringExpenses(departmentId),monthValue);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
