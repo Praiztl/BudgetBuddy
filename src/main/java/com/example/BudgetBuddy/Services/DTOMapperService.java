@@ -4,6 +4,8 @@ import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Repositories.BudgetRepository;
 import com.example.BudgetBuddy.Repositories.HODRepository;
+import com.example.BudgetBuddy.Repositories.OneTimeExpenseRepository;
+import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -75,7 +77,7 @@ public class DTOMapperService {
         List<String> oneTimeExpensesBudget = new ArrayList<>();
         for(OneTimeExpense expense: oneTimeExpenses){
             if(expense.getBudgetName().equals(budget.getName())){
-                oneTimeExpensesBudget.add(expense.toString);
+                oneTimeExpensesBudget.add(expense.toString());
             }
         }
 
@@ -83,7 +85,7 @@ public class DTOMapperService {
         List<String> recurringExpensesBudget = new ArrayList<>();
         for(OneTimeExpense expense: oneTimeExpenses){
             if(expense.getBudgetName().equals(budget.getName())){
-                oneTimeExpensesBudget.add(expense.toString);
+                oneTimeExpensesBudget.add(expense.toString());
             }
         }
 
@@ -94,7 +96,7 @@ public class DTOMapperService {
                 .date(budget.getCreatedAt())
                 .amount(budget.getAmount())
                 .oneTimeExpenses(oneTimeExpensesBudget)
-                .recurringExpebnses(recurringExpensesBudget)
+                .recurringExpenses(recurringExpensesBudget)
                 .departmentName(budget.getDepartment().getName())
                 .approvalStatus(budget.getStatus())
                 .build();
