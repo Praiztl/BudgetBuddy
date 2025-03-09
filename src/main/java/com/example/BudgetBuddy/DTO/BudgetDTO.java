@@ -19,6 +19,7 @@ public class BudgetDTO {
     private LocalDate date;
     private Double amount;
     private String departmentName;
+    private String organizationName;
     private Budget.Status approvalStatus;
     private List<String> oneTimeExpenses;
     private List<String> recurringExpenses;

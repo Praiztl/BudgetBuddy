@@ -5,11 +5,8 @@ import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Department;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Models.RecurringExpense;
-import com.example.BudgetBuddy.Repositories.BudgetRepository;
-import com.example.BudgetBuddy.Repositories.DepartmentRepository;
+import com.example.BudgetBuddy.Repositories.*;
 import jakarta.transaction.Transactional;
-import com.example.BudgetBuddy.Repositories.OneTimeExpenseRepository;
-import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +35,9 @@ public class DepartmentService {
     private BudgetRepository budgetRepo;
 
     @Autowired
+    private OrganizationRepository organizationRepository;
+
+    @Autowired
     private RecurringExpenseRepository recurringExpenseRepository;
 
     @Autowired
@@ -48,13 +48,34 @@ public class DepartmentService {
         return ResponseEntity.ok(departments);
     }
 
-    public Department createDepartment(String departmentName) {
+    public List<Department> getDepartmentsByNameForOrganization(String orgName){
+        List<Department> orgDepartments = new ArrayList<>();
+        for(Department department : getAllDepartments().getBody()){
+            if(department.getOrganization().getName().equals(orgName)){
+                orgDepartments.add(department);
+            }
+        }
+        return orgDepartments;
+    }
+
+    public List<Department> getDepartmentsForOrganization(Long orgId){
+        List<Department> orgDepartments = new ArrayList<>();
+        for(Department department : getAllDepartments().getBody()){
+            if(department.getOrganization().getId().equals(orgId)){
+                orgDepartments.add(department);
+            }
+        }
+        return orgDepartments;
+    }
+
+    public Department createDepartment(String departmentName, Long orgId) {
         if (departmentName == null || departmentName.trim().isEmpty()) {
             throw new IllegalArgumentException("Department name cannot be null or empty");
         }
 
         Department department = new Department();
         department.setName(departmentName);
+        department.setOrganization(organizationRepository.findById(orgId).orElseThrow(()->new IllegalArgumentException("Organization not found")));
         department.setCreatedAt(LocalDate.now());
         return departmentRepository.save(department);
     }

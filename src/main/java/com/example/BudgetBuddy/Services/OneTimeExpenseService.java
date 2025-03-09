@@ -59,6 +59,16 @@ public class OneTimeExpenseService {
         return new ResponseEntity<>(expenses, HttpStatus.OK);
     }
 
+    public List<OneTimeExpense> getForOrganization(Long orgId){
+        List<OneTimeExpense> orgExpenses = new ArrayList<>();
+        for(OneTimeExpense expense: getOneTimeExpenses()){
+            if(expense.getAssignedTo().getOrganization().getId().equals(orgId)){
+                orgExpenses.add(expense);
+            }
+        }
+        return orgExpenses;
+    }
+
     public void deleteExpense(Integer id){
         repository.deleteById(id);
     }

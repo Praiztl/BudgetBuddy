@@ -24,8 +24,8 @@ public class AdminExpenseCalculator {
     private BudgetService budgetService;
 
 
-    public Double getMonthlyAmountRecurringExpenses(String monthName){
-        List<RecurringExpense> expenses = recurringExpenseService.getApprovedExpenses();
+    public Double getMonthlyAmountRecurringExpenses(String monthName, Long orgId){
+        List<RecurringExpense> expenses = recurringExpenseService.getApprovedExpensesForOrg(orgId);
         List<RecurringExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(RecurringExpense expense : expenses){
@@ -49,8 +49,8 @@ public class AdminExpenseCalculator {
         return total;
     }
 
-    public Double getYearlyAmountRecurringExpenses(Integer year){
-        List<RecurringExpense> expenses = recurringExpenseService.getApprovedExpenses();
+    public Double getYearlyAmountRecurringExpenses(Integer year, Long orgId){
+        List<RecurringExpense> expenses = recurringExpenseService.getApprovedExpensesForOrg(orgId);
         List<RecurringExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(RecurringExpense expense : expenses){
@@ -74,8 +74,8 @@ public class AdminExpenseCalculator {
         return total;
     }
 
-    public Double getMonthlyAmountOneTimeExpenses(String monthName){
-        List<OneTimeExpense> expenses = oneTimeExpenseService.getOneTimeExpenses();
+    public Double getMonthlyAmountOneTimeExpenses(String monthName, Long orgId){
+        List<OneTimeExpense> expenses = oneTimeExpenseService.getForOrganization(orgId);
         List<OneTimeExpense> response = new ArrayList<>();
         Double total = 0.0;
         for(OneTimeExpense expense : expenses){
@@ -91,8 +91,8 @@ public class AdminExpenseCalculator {
         return total;
     }
 
-    public Double getYearlyAmountOneTimeExpenses(Integer year){
-        List<OneTimeExpense> expenses = oneTimeExpenseService.getOneTimeExpenses();
+    public Double getYearlyAmountOneTimeExpenses(Integer year, Long orgId){
+        List<OneTimeExpense> expenses = oneTimeExpenseService.getForOrganization(orgId);
         List<OneTimeExpense> response = new ArrayList<>();
         Double total = 0.0;
 //        for(OneTimeExpense expense : expenses){

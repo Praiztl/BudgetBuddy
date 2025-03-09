@@ -43,12 +43,12 @@ public class NotificationService {
         return result;
     }
 
-    public List<NotificationDTO> getNotificationsForAdmin(){
+    public List<NotificationDTO> getNotificationsForAdmin(Long orgId){
         List<Notification> notifications = notificationRepository.findAll();
         List<NotificationDTO> result = new ArrayList<>();
 
         for(Notification notification : notifications){
-            if(notification.getAssignedTo()==null){
+            if(notification.getAssignedTo()==null && notification.getOrganization().getId().equals(orgId)){
                 result.add(dtoMapperService.convertToNotificationDTO(notification));
             }
         }

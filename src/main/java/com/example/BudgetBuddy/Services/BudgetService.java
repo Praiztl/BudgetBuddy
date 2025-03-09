@@ -5,6 +5,7 @@ import com.example.BudgetBuddy.Exceptions.BudgetNotFoundException;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Repositories.BudgetRepository;
+import com.example.BudgetBuddy.Repositories.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class BudgetService {
     private BudgetRepository budgetRepo;
 
     @Autowired
+    private OrganizationRepository organizationRepository;
+
+    @Autowired
     private NotificationService notificationService;
 
     public Budget createBudget(Budget newBudget){
@@ -24,7 +28,8 @@ public class BudgetService {
         notificationService.createNotification(new Notification(
                 "Budget Submission",
                 "New budget %s submitted for approval".formatted(savedBudget.getName()),
-                savedBudget.getDepartment().getName()
+                savedBudget.getDepartment().getName(),
+                savedBudget.getDepartment().getOrganization()
                 ));
         return savedBudget;
     }
@@ -36,6 +41,16 @@ public class BudgetService {
 
     public Budget getBudgetById(Long id){
         return budgetRepo.findById(id).orElseThrow(()->new BudgetNotFoundException("Budget with this ID does not exist."));
+    }
+
+    public List<Budget> getAllBudgetsForOrg(Long orgId){
+        List<Budget> orgBudgets = new ArrayList<>();
+        for(Budget budget: getAllBudgets()){
+            if(budget.getDepartment().getOrganization().getId().equals(orgId)){
+                orgBudgets.add(budget);
+            }
+        }
+        return orgBudgets;
     }
 
     public Budget updateBudget(Long id, UpdateBudgetDTO updateBody){
@@ -58,7 +73,8 @@ public class BudgetService {
                 "Budget Approval",
                 "Budget %s has been approved".formatted(savedBudget.getName()),
                 savedBudget.getDepartment(),
-                "Admin"
+                "Admin",
+                savedBudget.getDepartment().getOrganization()
         ));
         return savedBudget;
     }
@@ -71,7 +87,8 @@ public class BudgetService {
                 "Budget Rejection",
                 "Budget %s has been rejected because: %s.".formatted(savedBudget.getName(),message),
                 savedBudget.getDepartment(),
-                "Admin"
+                "Admin",
+                savedBudget.getDepartment().getOrganization()
         ));
         return budget;
     }
@@ -92,6 +109,18 @@ public class BudgetService {
         return response;
     }
 
+    public List<Budget> getApprovedBudgetsForOrg(Long orgId){
+        List<Budget> budgets = budgetRepo.findAll();
+        List<Budget> response = new ArrayList<>();
+        for(Budget budget : budgets){
+            if(budget.getStatus().equals(Budget.Status.Approved) && budget.getDepartment().getOrganization().getId().equals(orgId)){
+                response.add(budget);
+            }
+        }
+        return response;
+    }
+
+
     public List<Budget> getPendingBudgets(){
         List<Budget> budgets = budgetRepo.findAll();
         List<Budget> response = new ArrayList<>();
@@ -103,11 +132,33 @@ public class BudgetService {
         return response;
     }
 
+    public List<Budget> getPendingBudgetsForOrg(Long orgId){
+        List<Budget> budgets = budgetRepo.findAll();
+        List<Budget> response = new ArrayList<>();
+        for(Budget budget : budgets){
+            if(budget.getStatus().equals(Budget.Status.Pending) && budget.getDepartment().getOrganization().equals(organizationRepository.findById(orgId))){
+                response.add(budget);
+            }
+        }
+        return response;
+    }
+
     public List<Budget> getRejectedBudgets(){
         List<Budget> budgets = budgetRepo.findAll();
         List<Budget> response = new ArrayList<>();
         for(Budget budget : budgets){
             if(budget.getStatus().equals(Budget.Status.Rejected)){
+                response.add(budget);
+            }
+        }
+        return response;
+    }
+
+    public List<Budget> getRejectedBudgetsForOrg(Long orgId){
+        List<Budget> budgets = budgetRepo.findAll();
+        List<Budget> response = new ArrayList<>();
+        for(Budget budget : budgets){
+            if(budget.getStatus().equals(Budget.Status.Rejected) && budget.getDepartment().getOrganization().equals(organizationRepository.findById(orgId))){
                 response.add(budget);
             }
         }

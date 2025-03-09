@@ -1,6 +1,5 @@
 package com.example.BudgetBuddy.Services;
 
-import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
@@ -29,12 +28,13 @@ public class RecurringExpenseService {
         expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
         expense.setCreatedAt(LocalDate.now());
         expense.setApprovalStatus(RecurringExpense.Status.Pending);
-        expense.setBudget((departmentService.getApprovedBudgets(departmentId).get(0).getDepartmentName()));
+        expense.setBudget((departmentService.getApprovedBudgets(departmentId).get(0).getName()));
         RecurringExpense savedExpense = repository.save(expense);
         notificationService.createNotification(new Notification(
                 "Recurring Expense Submission",
                 "New recurring expense %s submitted for approval.".formatted(savedExpense.getName()),
-                savedExpense.getAssignedTo().getName()
+                savedExpense.getAssignedTo().getName(),
+                savedExpense.getAssignedTo().getOrganization()
         ));
         return savedExpense;
     }
@@ -44,6 +44,16 @@ public class RecurringExpenseService {
      */
     public List<RecurringExpense> getRecurringExpenses(){
         return repository.findAll();
+    }
+
+    public List<RecurringExpense> getRecurringExpensesForOrg(Long orgId) {
+        List<RecurringExpense> orgExpenses = new ArrayList<>();
+        for(RecurringExpense expense: getRecurringExpenses()){
+            if(expense.getAssignedTo().getOrganization().getId().equals(orgId)){
+                orgExpenses.add(expense);
+            }
+        }
+        return  orgExpenses;
     }
 
     /*
@@ -65,7 +75,8 @@ public class RecurringExpenseService {
                 "Recurring Expense Approval",
                 "Recurring expense %s has been approved".formatted(savedExpense.getName()),
                 savedExpense.getAssignedTo(),
-                "Admin"
+                "Admin",
+                savedExpense.getAssignedTo().getOrganization()
         ));
         return savedExpense;
     }
@@ -78,7 +89,8 @@ public class RecurringExpenseService {
                 "Recurring Expense Rejection",
                 "Recurring expense %s has been rejected because: %s.".formatted(savedExpense.getName(),message),
                 savedExpense.getAssignedTo(),
-                "Admin"
+                "Admin",
+                savedExpense.getAssignedTo().getOrganization()
         ));
         return savedExpense;
     }
@@ -100,6 +112,16 @@ public class RecurringExpenseService {
         return response;
     }
 
+    public List<RecurringExpense> getApprovedExpensesForOrg(Long orgId){
+        List<RecurringExpense> approvedOrgExpenses = new ArrayList<>();
+        for(RecurringExpense expense: getApprovedExpenses()){
+            if(expense.getAssignedTo().getOrganization().getId().equals(orgId)){
+                approvedOrgExpenses.add(expense);
+            }
+        }
+        return approvedOrgExpenses;
+    }
+
     public List<RecurringExpense> getPendingExpenses(){
         List<RecurringExpense> expenses = repository.findAll();
         List<RecurringExpense> response = new ArrayList<>();
@@ -111,6 +133,17 @@ public class RecurringExpenseService {
         return response;
     }
 
+    public List<RecurringExpense> getPendingExpensesForOrg(Long orgId){
+        List<RecurringExpense> pendingOrgExpenses = new ArrayList<>();
+        for(RecurringExpense expense: getPendingExpenses()){
+            if(expense.getAssignedTo().getOrganization().getId().equals(orgId)){
+                pendingOrgExpenses.add(expense);
+            }
+        }
+        return pendingOrgExpenses;
+    }
+
+
     public List<RecurringExpense> getRejectedExpenses(){
         List<RecurringExpense> expenses = repository.findAll();
         List<RecurringExpense> response = new ArrayList<>();
@@ -120,6 +153,16 @@ public class RecurringExpenseService {
             }
         }
         return response;
+    }
+
+    public List<RecurringExpense> getRejectedExpensesForOrg(Long orgId){
+        List<RecurringExpense> rejectedOrgExpenses = new ArrayList<>();
+        for(RecurringExpense expense: getRejectedExpenses()){
+            if(expense.getAssignedTo().getOrganization().getId().equals(orgId)){
+                rejectedOrgExpenses.add(expense);
+            }
+        }
+        return rejectedOrgExpenses;
     }
 
     public Double getMonthlyAmountRecurringExpenses(String monthName){

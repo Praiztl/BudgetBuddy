@@ -2,10 +2,7 @@ package com.example.BudgetBuddy.Services;
 
 import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.*;
-import com.example.BudgetBuddy.Repositories.BudgetRepository;
-import com.example.BudgetBuddy.Repositories.HODRepository;
-import com.example.BudgetBuddy.Repositories.OneTimeExpenseRepository;
-import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
+import com.example.BudgetBuddy.Repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -87,10 +84,10 @@ public class DTOMapperService {
         List<RecurringExpense> recurringExpenses = recurringExpenseRepository.findAll();
         List<String> recurringExpensesBudget = new ArrayList<>();
         for(RecurringExpense expense: recurringExpenses){
-            if(expense.getBudget()==null){
+            if(expense.getBudget()==null && expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
                 expense.setBudget("Staff Welfare");
             }
-            if(expense.getBudget().equals(budget.getName())){
+            if(expense.getBudget().equals(budget.getName()) && expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
                 recurringExpensesBudget.add(expense.toString());
             }
         }
@@ -104,6 +101,7 @@ public class DTOMapperService {
                 .oneTimeExpenses(oneTimeExpensesBudget)
                 .recurringExpenses(recurringExpensesBudget)
                 .departmentName(budget.getDepartment().getName())
+                .organizationName(budget.getDepartment().getOrganization().getName())
                 .approvalStatus(budget.getStatus())
                 .build();
     }
@@ -180,18 +178,24 @@ public class DTOMapperService {
             }
         }
 
-        for (RecurringExpense expense: department.getRecurringExpenses()){
-            recExpenseDTOS.add(convertToRecExpenseDTO(expense));
+        if(department.getRecurringExpenses()!=null) {
+            for (RecurringExpense expense : department.getRecurringExpenses()) {
+                recExpenseDTOS.add(convertToRecExpenseDTO(expense));
+            }
         }
 
-        for (OneTimeExpense expense: department.getExpenses()){
-            oneTimeExpenseDTOS.add(convertToExpenseDTO(expense));
+        if(department.getExpenses()!=null) {
+            for (OneTimeExpense expense : department.getExpenses()) {
+                oneTimeExpenseDTOS.add(convertToExpenseDTO(expense));
+            }
         }
+
         return GetDepartmentDTO.builder()
                 .id(department.getId())
                 .name(department.getName())
                 .budgets(budgetDTOS)
                 .hod(getHODForDepartment(department.getId()))
+                .organizationName(department.getOrganization().getName())
                 .oneTimeExpenses(oneTimeExpenseDTOS)
                 .recurringExpenses(recExpenseDTOS)
                 .createdAt(department.getCreatedAt())

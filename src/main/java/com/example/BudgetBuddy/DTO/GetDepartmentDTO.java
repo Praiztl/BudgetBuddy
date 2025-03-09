@@ -22,6 +22,8 @@ public class GetDepartmentDTO {
 
     private LocalDate createdAt;
 
+    private String organizationName;
+
     private List<OneTimeExpenseDTO> oneTimeExpenses;
 
     private List<RecExpenseDTO> recurringExpenses;

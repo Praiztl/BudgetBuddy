@@ -50,7 +50,7 @@ public class ExpenseSummariser {
             return monthlySummary;
     }
 
-    public List<Map<String, Object>> getAdminMonthlySummary(List<Expense> expenseList) {
+    public List<Map<String, Object>> getAdminMonthlySummary(List<Expense> expenseList, Long orgId) {
         List<Map<String, Object>> monthlySummary = new ArrayList<>();
 
         for (Expense expense : expenseList) {
@@ -58,12 +58,12 @@ public class ExpenseSummariser {
             String monthValue = expense.getCreatedAt().getMonth().name().substring(0, 3);
 
             oneSummary.put("month", monthValue);
-            oneSummary.put("amount", adminExpenseCalculator.getMonthlyAmountRecurringExpenses(monthValue)+adminExpenseCalculator.getMonthlyAmountOneTimeExpenses(monthValue));
+            oneSummary.put("amount", adminExpenseCalculator.getMonthlyAmountRecurringExpenses(monthValue, orgId)+adminExpenseCalculator.getMonthlyAmountOneTimeExpenses(monthValue, orgId));
             boolean found = false;
             for (Map<String, Object> existingSummary : monthlySummary) {
                 if (existingSummary.get("month").equals(monthValue)) {
                     Double existingAmount = (Double) existingSummary.get("amount");
-                    existingSummary.put("amount", adminExpenseCalculator.getMonthlyAmountOneTimeExpenses(monthValue)+adminExpenseCalculator.getMonthlyAmountRecurringExpenses(monthValue));
+                    existingSummary.put("amount", adminExpenseCalculator.getMonthlyAmountOneTimeExpenses(monthValue, orgId)+adminExpenseCalculator.getMonthlyAmountRecurringExpenses(monthValue, orgId));
                     found = true;
                     break;
                 }
@@ -105,7 +105,7 @@ public class ExpenseSummariser {
         return yearlySummary;
     }
 
-    public List<Map<String, Object>> getAdminYearlySummary(List<Expense> expenseList) {
+    public List<Map<String, Object>> getAdminYearlySummary(List<Expense> expenseList, Long orgId) {
         List<Map<String, Object>> yearlySummary = new ArrayList<>();
 
         for (Expense expense : expenseList) {
@@ -113,12 +113,12 @@ public class ExpenseSummariser {
             Integer yearValue = expense.getCreatedAt().getYear();
 
             oneSummary.put("year", yearValue);
-            oneSummary.put("amount", adminExpenseCalculator.getYearlyAmountRecurringExpenses(yearValue) +adminExpenseCalculator.getYearlyAmountOneTimeExpenses(yearValue));
+            oneSummary.put("amount", adminExpenseCalculator.getYearlyAmountRecurringExpenses(yearValue, orgId) +adminExpenseCalculator.getYearlyAmountOneTimeExpenses(yearValue, orgId));
             boolean found = false;
             for (Map<String, Object> existingSummary : yearlySummary) {
                 if (existingSummary.get("year").equals(yearValue)) {
                     Double existingAmount = (Double) existingSummary.get("amount");
-                    existingSummary.put("amount", adminExpenseCalculator.getYearlyAmountOneTimeExpenses(yearValue)+adminExpenseCalculator.getYearlyAmountRecurringExpenses(yearValue));
+                    existingSummary.put("amount", adminExpenseCalculator.getYearlyAmountOneTimeExpenses(yearValue, orgId)+adminExpenseCalculator.getYearlyAmountRecurringExpenses(yearValue, orgId));
                     found = true;
                     break;
                 }

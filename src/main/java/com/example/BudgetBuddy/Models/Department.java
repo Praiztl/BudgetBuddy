@@ -24,6 +24,11 @@ public class Department {
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Budget> budgets;
 
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
+
     @OneToOne(mappedBy = "department", cascade = CascadeType.ALL, orphanRemoval = true)
     private HOD hod;
 
@@ -36,6 +41,13 @@ public class Department {
     @OneToMany(mappedBy = "assignedTo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notification> notifications;
 
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 
     public LocalDate getCreatedAt() {
         return createdAt;

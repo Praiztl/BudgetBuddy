@@ -2,7 +2,6 @@ package com.example.BudgetBuddy.DTO;
 
 import com.example.BudgetBuddy.Validation.PasswordMatch;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -28,6 +27,9 @@ public class AdminRegistrationDTO {
 
     @NotNull(message = "Please confirm your password")
     private String confirmPassword; // This is for password confirmation during registration
+
+    @NotNull(message = "Please enter a name for your organization")
+    private String organizationName;
 
     // Custom validation to ensure passwords match
     public boolean isPasswordMatching() {

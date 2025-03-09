@@ -38,6 +38,7 @@ public class HODRegistrationDTO {
     @NotNull(message = "Department ID is required")
     private Long departmentId; // Department selected by HOD during registration
 
+    private String organizationName;
 
     public Department getDepartment() {
         return new Department(departmentId, "Department Name");

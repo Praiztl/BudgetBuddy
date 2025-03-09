@@ -20,7 +20,19 @@ public class Notification {
     @JoinColumn(name = "assignedTo_id")
     private Department assignedTo;
 
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
+
     private String sender;
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
+    }
 
     public String getSender() {
         return sender;
@@ -47,19 +59,21 @@ public class Notification {
     public Notification() {
     }
 
-    public Notification(String type, String message, Department department, String from) {
+    public Notification(String type, String message, Department department, String from, Organization organization) {
         this.type = type;
         this.message = message;
         this.assignedTo = department;
         this.sender = from;
+        this.organization = organization;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
     }
 
-    public Notification(String type, String message, String from) {
+    public Notification(String type, String message, String from, Organization organization) {
         this.type = type;
         this.message = message;
         this.sender = from;
+        this.organization = organization;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
     }
