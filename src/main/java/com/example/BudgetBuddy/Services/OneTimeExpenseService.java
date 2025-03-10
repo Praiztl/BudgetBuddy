@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.Models.Budget;
 import com.example.BudgetBuddy.Models.OneTimeExpense;
 import com.example.BudgetBuddy.Repositories.OneTimeExpenseRepository;
@@ -27,7 +28,8 @@ public class OneTimeExpenseService {
         if (expense.getAssignedTo() == null) {
             expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
             expense.setCreatedAt(LocalDate.now());
-            expense.setBudgetName((departmentService.getApprovedBudgets(departmentId).get(0).getName()));
+            List<BudgetDTO> approvedBudgets = departmentService.getApprovedBudgets(departmentId);
+            expense.setBudgetName(approvedBudgets.isEmpty() ? null : approvedBudgets.get(approvedBudgets.size() - 1).getName());
             OneTimeExpense response = repository.save(expense);
             return new ResponseEntity<OneTimeExpense>(response, HttpStatus.CREATED);
         }else{

@@ -1,5 +1,6 @@
 package com.example.BudgetBuddy.Services;
 
+import com.example.BudgetBuddy.DTO.BudgetDTO;
 import com.example.BudgetBuddy.Models.Notification;
 import com.example.BudgetBuddy.Models.RecurringExpense;
 import com.example.BudgetBuddy.Repositories.RecurringExpenseRepository;
@@ -28,7 +29,8 @@ public class RecurringExpenseService {
         expense.setAssignedTo(departmentService.getDepartmentById(departmentId).getBody());
         expense.setCreatedAt(LocalDate.now());
         expense.setApprovalStatus(RecurringExpense.Status.Pending);
-        expense.setBudget((departmentService.getApprovedBudgets(departmentId).get(0).getName()));
+        List<BudgetDTO> approvedBudgets = departmentService.getApprovedBudgets(departmentId);
+        expense.setBudget(approvedBudgets.isEmpty() ? null : approvedBudgets.get(approvedBudgets.size() - 1).getName());
         RecurringExpense savedExpense = repository.save(expense);
         notificationService.createNotification(new Notification(
                 "Recurring Expense Submission",
