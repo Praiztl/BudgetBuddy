@@ -1,8 +1,6 @@
 package com.example.BudgetBuddy.Controllers;
 
-import com.example.BudgetBuddy.DTO.BudgetDTO;
-import com.example.BudgetBuddy.DTO.NotificationDTO;
-import com.example.BudgetBuddy.DTO.RecExpenseDTO;
+import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Models.*;
 import com.example.BudgetBuddy.Services.*;
 import com.example.BudgetBuddy.Utilities.AdminExpenseCalculator;
@@ -142,6 +140,15 @@ public class AdminController {
     public Integer getDepartmentCount(@PathVariable(name = "orgId") Long orgId){
         Integer departmentCount = departmentService.getDepartmentsForOrganization(orgId).size();
         return departmentCount;
+    }
+
+    @GetMapping(path = "/{orgId}/departments")
+    public List<GetDepartmentDTO> getDepartmentsForOrg(@PathVariable(name = "orgId") Long orgId){
+        List<GetDepartmentDTO> departmentDTOS = new ArrayList<>();
+        for (Department department: departmentService.getDepartmentsForOrganization(orgId)){
+            departmentDTOS.add(dtoMapperService.convertToGetDepartmentDTO(department));
+        }
+        return departmentDTOS;
     }
 
     @GetMapping(path = "/{orgId}/dashboard/get-expense-chart")
