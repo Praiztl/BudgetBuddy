@@ -61,8 +61,8 @@ public class AuthenticationService {
 
 
 
-//        // Generate and send OTP
-//        generateAndSendOTP(savedAdmin.getEmail());
+        // Generate and send OTP
+        generateAndSendOTP(savedAdmin.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "Admin registered successfully. OTP sent to email."));
@@ -99,8 +99,8 @@ public class AuthenticationService {
         // Save department again to persist the update
         departmentRepository.save(department);
 
-//        // Generate and send OTP
-//        generateAndSendOTP(savedHOD.getEmail());
+        // Generate and send OTP
+        generateAndSendOTP(savedHOD.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "HOD registered successfully."));
@@ -134,10 +134,10 @@ public class AuthenticationService {
             organization = admin.getOrganization();
         }
 
-//        if (!isVerified) {
-//            response.put("error", "Account is not verified. Please complete OTP verification.");
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-//        }
+        if (!isVerified) {
+            response.put("error", "Account is not verified. Please complete OTP verification.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
