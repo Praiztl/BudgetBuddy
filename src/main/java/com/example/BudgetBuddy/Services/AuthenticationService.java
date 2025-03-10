@@ -3,16 +3,11 @@ package com.example.BudgetBuddy.Services;
 import com.example.BudgetBuddy.DTO.*;
 import com.example.BudgetBuddy.Exceptions.AuthenticationException;
 import com.example.BudgetBuddy.Exceptions.UserNotFoundException;
-import com.example.BudgetBuddy.Models.Department;
+import com.example.BudgetBuddy.Models.*;
+import com.example.BudgetBuddy.Repositories.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.GrantedAuthority;
-import com.example.BudgetBuddy.Models.Admin;
-import com.example.BudgetBuddy.Models.HOD;
-import com.example.BudgetBuddy.Models.OTPCode;
-import com.example.BudgetBuddy.Repositories.AdminRepository;
-import com.example.BudgetBuddy.Repositories.DepartmentRepository;
-import com.example.BudgetBuddy.Repositories.HODRepository;
-import com.example.BudgetBuddy.Repositories.OTPRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +36,10 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final EmailService emailService;
 
+    @Autowired
+    private OrganizationRepository organizationRepository;
+
+
     /**
      * Registers a new Admin.
      */
@@ -53,11 +52,17 @@ public class AuthenticationService {
         }
 
         Admin newAdmin = dtoMapperService.convertToAdminEntity(adminDTO);
+        Organization organization = new Organization();
+        organization.setName(adminDTO.getOrganizationName());
+        Organization savedOrg = organizationRepository.save(organization);
+        newAdmin.setOrganization(savedOrg);
         newAdmin.setPassword(passwordEncoder.encode(adminDTO.getPassword())); // Encode password
         Admin savedAdmin = adminRepository.save(newAdmin);
 
-        // Generate and send OTP
-        generateAndSendOTP(savedAdmin.getEmail());
+
+
+//        // Generate and send OTP
+//        generateAndSendOTP(savedAdmin.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "Admin registered successfully. OTP sent to email."));
@@ -94,8 +99,8 @@ public class AuthenticationService {
         // Save department again to persist the update
         departmentRepository.save(department);
 
-        // Generate and send OTP
-        generateAndSendOTP(savedHOD.getEmail());
+//        // Generate and send OTP
+//        generateAndSendOTP(savedHOD.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(Map.of("message", "HOD registered successfully."));
@@ -115,22 +120,24 @@ public class AuthenticationService {
         boolean isVerified = false;
         boolean isAdmin = false;
 
-
-        Department departmentId = null;
+        Organization organization = null;
+        Department department = null;
         if (hodOptional.isPresent()) {
             HOD hod = hodOptional.get();
             isVerified = hod.getIsOtpVerified();
-            departmentId = hod.getDepartment();
+            department = hod.getDepartment();
+            organization = hod.getDepartment().getOrganization();
         } else if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
             isVerified = admin.getIsOtpVerified();
             isAdmin = true;
+            organization = admin.getOrganization();
         }
 
-        if (!isVerified) {
-            response.put("error", "Account is not verified. Please complete OTP verification.");
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
+//        if (!isVerified) {
+//            response.put("error", "Account is not verified. Please complete OTP verification.");
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+//        }
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
@@ -150,7 +157,8 @@ public class AuthenticationService {
             response.put("token", jwtToken);
             response.put("roles", roles);
             response.put("isAdmin", isAdmin);
-            response.put("department_id", departmentId != null ? departmentId.getId() : null);
+            response.put("department_id", department != null ? department.getId() : null);
+            response.put("organization_id", organization != null ? organization.getId() : null);
 
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {

@@ -44,11 +44,11 @@ public class AdminService {
     @Autowired
     private RecurringExpenseService recurringExpenseService;
 
-    public Map<String, Integer> getBudgetStatistics(){
+    public Map<String, Integer> getBudgetStatistics(Long orgId){
         Map<String, Integer> statistics = new HashMap<>();
-        statistics.put("budgets", budgetService.getAllBudgets().size());
-        statistics.put("recExpenses", recurringExpenseService.getRecurringExpenses().size());
-        statistics.put("departments", departmentService.getAllDepartments().getBody().size());
+        statistics.put("budgets", budgetService.getAllBudgetsForOrg(orgId).size());
+        statistics.put("recExpenses", recurringExpenseService.getRecurringExpensesForOrg(orgId).size());
+        statistics.put("departments", departmentService.getDepartmentsForOrganization(orgId).size());
 
         return statistics;
     }

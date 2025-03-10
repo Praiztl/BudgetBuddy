@@ -50,9 +50,15 @@ public class DepartmentController {
      * Get all departments (Accessible by Anyone)
      */
     @GetMapping
-    public ResponseEntity<List<GetDepartmentDTO>> getAllDepartments() {
-        List<Department> departments = departmentService.getAllDepartments().getBody();
+    public ResponseEntity<List<GetDepartmentDTO>> getAllDepartments(@RequestParam(name = "organizationName", required = false) String orgName) {
+        List<Department> departments = new ArrayList<>();
         List<GetDepartmentDTO> response = new ArrayList<>();
+        if(orgName==null){
+            departments = departmentService.getAllDepartments().getBody();
+        }
+        else{
+            departments = departmentService.getDepartmentsByNameForOrganization(orgName);
+        }
         for(Department department: departments){
             response.add(dtoMapperService.convertToGetDepartmentDTO(department));
         }
@@ -62,8 +68,8 @@ public class DepartmentController {
     /**
      * Create one or more departments (Only Admin)
      */
-    @PostMapping("/create")
-    public ResponseEntity<?> createDepartments(@RequestBody DepartmentDTO departmentsDTO) {
+    @PostMapping("/create/{orgId}")
+    public ResponseEntity<?> createDepartments(@PathVariable("orgId") Long orgId, @RequestBody DepartmentDTO departmentsDTO) {
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        boolean isAdmin = authentication.getAuthorities().stream()
 //                .map(GrantedAuthority::getAuthority)
@@ -80,10 +86,14 @@ public class DepartmentController {
         List<Department> createdDepartments = new ArrayList<>();
 
         for (String department : departmentsDTO.getDepartments()) {
-            Department savedDepartment = departmentService.createDepartment(department);
+            Department savedDepartment = departmentService.createDepartment(department, orgId);
             createdDepartments.add(savedDepartment);
         }
 
+        List<GetDepartmentDTO> departmentDTOs = new ArrayList<>();
+        for(Department department: createdDepartments){
+            departmentDTOs.add(dtoMapperService.convertToGetDepartmentDTO(department));
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartments);
     }
 
@@ -91,8 +101,8 @@ public class DepartmentController {
      * Get department by ID (Accessible by Anyone)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Department> getDepartmentById(@PathVariable Long id) {
-        return departmentService.getDepartmentById(id);
+    public ResponseEntity<GetDepartmentDTO> getDepartmentById(@PathVariable Long id) {
+        return new ResponseEntity<>(dtoMapperService.convertToGetDepartmentDTO(departmentService.getDepartmentById(id).getBody()), HttpStatus.OK);
     }
 
     /**

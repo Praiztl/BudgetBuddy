@@ -50,11 +50,11 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @GetMapping(path = "/notifications")
-    public ResponseEntity<?> getNotificationsForaAdmin(){
+    @GetMapping(path = "/{orgId}/notifications")
+    public ResponseEntity<?> getNotificationsForaAdmin(@PathVariable(name = "orgId")Long orgId){
         Map<String, List<NotificationDTO>> notificationMapping = new HashMap<>();
 
-        List<NotificationDTO> allNotifications = notificationService.getNotificationsForAdmin();
+        List<NotificationDTO> allNotifications = notificationService.getNotificationsForAdmin(orgId);
         List<NotificationDTO> older = new ArrayList<>();
         List<NotificationDTO> recent = new ArrayList<>();
 
@@ -72,9 +72,9 @@ public class AdminController {
         return new ResponseEntity<>(notificationMapping, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/dashboard/get-budget-count-per-department")
-    public ResponseEntity<Map<String, Integer>> getBudgetPerDepartment(){
-        List<Department> departments = departmentService.getAllDepartments().getBody();
+    @GetMapping(path = "/{orgId}/dashboard/get-budget-count-per-department")
+    public ResponseEntity<Map<String, Integer>> getBudgetPerDepartment(@PathVariable(name = "orgId") Long orgId){
+        List<Department> departments = departmentService.getDepartmentsForOrganization(orgId);
         Map<String, Integer> departmentCounts = new HashMap<>();
         assert departments != null;
         for(Department department: departments){
@@ -85,31 +85,31 @@ public class AdminController {
         return new ResponseEntity<>(departmentCounts, HttpStatus.OK);
     }
 
-    @GetMapping(path = "/dashboard/get-budget-statistics")
-    public ResponseEntity<?> getBudgetStatistics(){         //Map<String, Integer>
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON ).body(adminService.getBudgetStatistics());
+    @GetMapping(path = "/{orgId}/dashboard/get-budget-statistics")
+    public ResponseEntity<?> getBudgetStatistics(@PathVariable(name = "orgId")Long orgId){         //Map<String, Integer>
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON ).body(adminService.getBudgetStatistics(orgId));
     }
 
-    @GetMapping(path = "/dashboard/get-total-budget-count")
-    public Integer getTotalBudgetCount(@RequestParam(name = "status", required = false)Budget.Status status){
+    @GetMapping(path = "/{orgId}/dashboard/get-total-budget-count")
+    public Integer getTotalBudgetCount(@PathVariable(name = "orgId") Long orgId, @RequestParam(name = "status", required = false)Budget.Status status){
         Integer count = 0;
         if(status==null){
-            count = budgetService.getAllBudgets().size();
+            count = budgetService.getAllBudgetsForOrg(orgId).size();
         }
         else if(status.equals(Budget.Status.Approved)){
-            count = budgetService.getApprovedBudgets().size();
+            count = budgetService.getApprovedBudgetsForOrg(orgId).size();
         } else if (status.equals(Budget.Status.Pending)){
-            count = budgetService.getPendingBudgets().size();
+            count = budgetService.getPendingBudgetsForOrg(orgId).size();
         } else if (status.equals(Budget.Status.Rejected)) {
-            count = budgetService.getRejectedBudgets().size();
+            count = budgetService.getRejectedBudgetsForOrg(orgId).size();
         }
 
        return count;
     }
 
-    @GetMapping(path = "/dashboard/get-recurring-expense-count")
-    public Map<String, Integer> getRecurringExpenseCount(){
-        List<Department> departments = departmentService.getAllDepartments().getBody();
+    @GetMapping(path = "/{orgId}/dashboard/get-recurring-expense-count")
+    public Map<String, Integer> getRecurringExpenseCount(@PathVariable(name = "orgId") Long orgId){
+        List<Department> departments = departmentService.getDepartmentsForOrganization(orgId);
         Map<String, Integer> departmentCounts = new HashMap<>();
         assert departments != null;
         for(Department department: departments){
@@ -120,76 +120,76 @@ public class AdminController {
         return departmentCounts;
     }
 
-    @GetMapping(path = "/dashboard/get-total-recurring-expense-count")
-    public Integer getTotalRecurringExpenseCount(@RequestParam(name = "status", required = false) RecurringExpense.Status status) {
+    @GetMapping(path = "/{orgId}/dashboard/get-total-recurring-expense-count")
+    public Integer getTotalRecurringExpenseCount(@PathVariable(name = "orgId")Long orgId, @RequestParam(name = "status", required = false) RecurringExpense.Status status) {
         Integer count = 0;
         if (status == null) {
-            count = recurringExpenseService.getRecurringExpenses().size();
+            count = recurringExpenseService.getRecurringExpensesForOrg(orgId).size();
         }
         else if (status.equals(RecurringExpense.Status.Approved)) {
-            count = recurringExpenseService.getApprovedExpenses().size();
+            count = recurringExpenseService.getApprovedExpensesForOrg(orgId).size();
         } else if (status.equals(RecurringExpense.Status.Pending)) {
-            count = recurringExpenseService.getPendingExpenses().size();
+            count = recurringExpenseService.getPendingExpensesForOrg(orgId).size();
         } else if (status.equals(RecurringExpense.Status.Rejected)) {
-            count = recurringExpenseService.getRejectedExpenses().size();
+            count = recurringExpenseService.getRejectedExpensesForOrg(orgId).size();
         }
 
         return count;
     }
 
 
-    @GetMapping(path = "/dashboard/get-department-count")
-    public Integer getDepartmentCount(){
-        Integer departmentCount = departmentService.getAllDepartments().getBody().size();
+    @GetMapping(path = "/{orgId}/dashboard/get-department-count")
+    public Integer getDepartmentCount(@PathVariable(name = "orgId") Long orgId){
+        Integer departmentCount = departmentService.getDepartmentsForOrganization(orgId).size();
         return departmentCount;
     }
 
-    @GetMapping(path = "/dashboard/get-expense-chart")
-    public HODExpenseChart getExpenseChart(){
+    @GetMapping(path = "/{orgId}/dashboard/get-expense-chart")
+    public HODExpenseChart getExpenseChart(@PathVariable(name = "orgId")Long orgId){
         List<Expense> expenseList = new ArrayList<>();
-        for(OneTimeExpense expense: oneTimeExpenseService.getOneTimeExpenses()){
+        for(OneTimeExpense expense: oneTimeExpenseService.getForOrganization(orgId)){
             expenseList.add(expense);
         }
-        for(RecurringExpense expense: recurringExpenseService.getApprovedExpenses()){
+        for(RecurringExpense expense: recurringExpenseService.getApprovedExpensesForOrg(orgId)){
             expenseList.add(expense);
         }
         HODExpenseChart response = new HODExpenseChart(
-                expenseSummariser.getAdminMonthlySummary(expenseList),
-                expenseSummariser.getAdminYearlySummary(expenseList)
+                expenseSummariser.getAdminMonthlySummary(expenseList, orgId),
+                expenseSummariser.getAdminYearlySummary(expenseList, orgId)
         );
         return response;
     }
 
-    @GetMapping(path = "/dashboard/get-yearly-budget-total")
-    public Map<Integer, Double> getYearlyBudgetTotal(){
-        List<Budget> budgetList = budgetService.getApprovedBudgets();
+    @GetMapping(path = "/{orgId}/dashboard/get-yearly-budget-total")
+    public Map<Integer, Double> getYearlyBudgetTotal(@PathVariable(name = "orgId") Long orgId){
+        List<Budget> budgetList = budgetService.getApprovedBudgetsForOrg(orgId);
         Map<Integer, Double> response = expenseSummariser.getAdminYearlyBudgetTotal(budgetList);
         return response;
     }
 
-    @GetMapping(path = "/dashboard/get-total-budget-list")
-    public List<BudgetDTO> getTotalBudgetList(@RequestParam(name = "status", required = false)Budget.Status status){
+    @GetMapping(path = "/{orgId}/dashboard/get-total-budget-list")
+    public List<BudgetDTO> getTotalBudgetList(@RequestParam(name = "status", required = false)Budget.Status status, @PathVariable(name = "orgId") Long orgId){
         List<BudgetDTO> totalBudgetDTOList = new ArrayList<>();
         List<Budget> totalBudgetList = new ArrayList<>();
 
         if(status == null) {
-            totalBudgetList = budgetService.getAllBudgets();
+            totalBudgetList = budgetService.getAllBudgetsForOrg(orgId);
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         }
         else if(status.equals(Budget.Status.Approved)){
-            totalBudgetList = budgetService.getApprovedBudgets();
+            totalBudgetList = budgetService.getApprovedBudgetsForOrg(orgId);
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         } else if (status.equals(Budget.Status.Pending)){
-            totalBudgetList = budgetService.getPendingBudgets();
+            totalBudgetList = budgetService.getPendingBudgetsForOrg(orgId);
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
         } else if (status.equals(Budget.Status.Rejected)) {
-            totalBudgetList = budgetService.getRejectedBudgets();
+            totalBudgetList = budgetService.getRejectedBudgetsForOrg(orgId);
             for(Budget budget : totalBudgetList){
                 totalBudgetDTOList.add(dtoMapperService.convertToBudgetDTO(budget));
             }
@@ -198,23 +198,23 @@ public class AdminController {
         return totalBudgetDTOList;
     }
 
-    @GetMapping(path = "/dashboard/get-total-recurring-expense-list")
-    public List<Object> getTotalRecurringExpenseList(@RequestParam(name = "status", required = false) RecurringExpense.Status status){
+    @GetMapping(path = "/{orgId}/dashboard/get-total-recurring-expense-list")
+    public List<Object> getTotalRecurringExpenseList(@PathVariable(name = "orgId") Long orgId, @RequestParam(name = "status", required = false) RecurringExpense.Status status){
         List<RecurringExpense> totalRecExpenseList = new ArrayList<>();
         List<OneTimeExpense> totalOneTimeExpenseList = new ArrayList<>();
         List<Object> response = new ArrayList<>();
 
         if(status == null) {
-            totalRecExpenseList=recurringExpenseService.getRecurringExpenses();
-            totalOneTimeExpenseList=oneTimeExpenseService.getOneTimeExpenses();
+            totalRecExpenseList=recurringExpenseService.getRecurringExpensesForOrg(orgId);
+            totalOneTimeExpenseList=oneTimeExpenseService.getForOrganization(orgId);
         }
         else if(status.equals(RecurringExpense.Status.Approved)){
-            totalRecExpenseList=recurringExpenseService.getApprovedExpenses();
-            totalOneTimeExpenseList=oneTimeExpenseService.getOneTimeExpenses();
+            totalRecExpenseList=recurringExpenseService.getApprovedExpensesForOrg(orgId);
+            totalOneTimeExpenseList=oneTimeExpenseService.getForOrganization(orgId);
         } else if (status.equals(RecurringExpense.Status.Pending)){
-            totalRecExpenseList=recurringExpenseService.getPendingExpenses();
+            totalRecExpenseList=recurringExpenseService.getPendingExpensesForOrg(orgId);
         } else if (status.equals(RecurringExpense.Status.Rejected)) {
-            totalRecExpenseList=recurringExpenseService.getRejectedExpenses();
+            totalRecExpenseList=recurringExpenseService.getRejectedExpensesForOrg(orgId);
         }
 
         for(RecurringExpense expense : totalRecExpenseList){

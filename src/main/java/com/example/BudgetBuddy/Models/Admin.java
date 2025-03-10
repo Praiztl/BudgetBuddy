@@ -24,6 +24,10 @@ public class Admin implements UserDetails {
     private String password;
     private Boolean isOtpVerified = false;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "organization_id", nullable = false, referencedColumnName = "id") // Ensures the department column exists
+    private Organization organization;
+
     @Enumerated(EnumType.STRING)
     private Role role; // Add role field to differentiate between user roles
 

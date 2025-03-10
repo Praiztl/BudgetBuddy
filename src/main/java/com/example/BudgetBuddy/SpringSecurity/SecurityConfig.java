@@ -37,7 +37,7 @@ public class SecurityConfig {
 //                        .requestMatchers(HttpMethod.GET, "/departments", "/departments/**").permitAll() // Allow GET requests to departments
 //                        .requestMatchers(HttpMethod.POST, "/departments", "/departments/**").permitAll() // Only ADMIN can create departments
                         .requestMatchers("/auth/**", "/api/v1/password/*").permitAll() // Allow authentication routes
-                        .requestMatchers(HttpMethod.GET, "/departments", "/departments/**", "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/organizations", "/organizations/**","/departments", "/departments/**", "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/departments", "/departments/**", "/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/departments", "/departments/**","/admin/**", "/notification/**", "/budgets/**", "/onetimeexpenses/**", "/recurringexpenses/**").permitAll()
