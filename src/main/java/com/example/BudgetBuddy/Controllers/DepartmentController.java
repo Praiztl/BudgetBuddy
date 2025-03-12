@@ -90,11 +90,11 @@ public class DepartmentController {
             createdDepartments.add(savedDepartment);
         }
 
-        List<GetDepartmentDTO> departmentDTOs = new ArrayList<>();
+        List<GetDepartmentDTO> departmentResponseDTOs = new ArrayList<>();
         for(Department department: createdDepartments){
-            departmentDTOs.add(dtoMapperService.convertToGetDepartmentDTO(department));
+            departmentResponseDTOs.add(dtoMapperService.convertToGetDepartmentDTO(department));
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdDepartments);
+        return ResponseEntity.status(HttpStatus.CREATED).body(departmentResponseDTOs);
     }
 
     /**
