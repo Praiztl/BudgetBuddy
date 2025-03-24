@@ -87,7 +87,7 @@ public class DTOMapperService {
             if(expense.getBudget()==null && expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
                 expense.setBudget("Staff Welfare");
             }
-            if(expense.getBudget().equals(budget.getName()) && expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
+            if(expense.getBudget()!=null && expense.getBudget().equals(budget.getName()) && expense.getApprovalStatus().equals(RecurringExpense.Status.Approved)){
                 recurringExpensesBudget.add(expense.toString());
             }
         }
